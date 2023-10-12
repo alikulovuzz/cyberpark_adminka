@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const { userLogger } = require('../helpers/logger')
 const Audit = require("../db/models/audit")
 const Company = require("../db/models/company")
+const Company_form = require("../db/models/company_form")
 
 
 /**
@@ -88,6 +89,122 @@ router.post("/", async (req, res) => {
     // check if user already exist
     // Validate if user exist in our database
     const checkCompany = await Company.findById(company_id);
+
+    if (!checkCompany) {
+      return res.status(400).json({ code: 400, message: 'Company is not in DataBase. Incorrect Company' });
+      // return res.status(409).send("User Already Exist. Please Login");
+    }
+    //order validation
+    const value = {
+      name_of_report: name_of_report,
+      file_link: file_link,
+      company_id: company_id,
+      year: year,
+      quarterly: quarterly,
+      release_product:release_product,
+      release_republic:release_republic,
+      invesment:invesment,
+      residental_payroll:residental_payroll,
+      import_funds:import_funds
+    };
+    const validateReports = new Audit(value);
+    // validation
+    var error = validateReports.validateSync();
+    if (error) {
+      return res.status(409).json({ code: 409, message: 'Validatioan error', error: error });
+    }
+    const report = await validateReports.save();
+
+    return res.status(201).json(report);
+  } catch (err) {
+    userLogger.error(err);
+    console.log(err)
+    return res.status(500).json({ code: 500, message: 'Internal server error', err: err });
+  }
+  // Our register logic ends here
+});
+/**
+ * @swagger
+ * /api/v1/reports:
+ *   post:
+ *     description: Reports of Company!
+ *     tags:
+ *       - Report
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             name_of_report:
+ *               description: Name of report
+ *               example: Oylik
+ *               type: string
+ *             file_link:
+ *               description: File
+ *               example: file.pdf
+ *               type: string
+ *             company_id:
+ *               description: Company Id
+ *               example: 64e339fe0c953d151cfb82dc
+ *               type: string
+ *             year:
+ *               description: Year of report
+ *               example: 2023
+ *               type: string
+ *             quarterly:
+ *               description: Quarterly report of company
+ *               example: first
+ *               type: string
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
+router.post("/v2", async (req, res) => {
+  // Our create logic starts here
+  try {
+    // Get user input
+    const { name_of_report, file_link, company_id, year, quarterly,release_product,release_republic,invesment,residental_payroll,import_funds } = req.body;
+    // Validate user input
+    if (!(name_of_report && company_id && year && quarterly)) {
+      return res.status(400).json({ code: 400, message: 'All input is required' });
+    }
+    // check if user already exist
+    // Validate if user exist in our database
+    const checkCompany = await Company_form.findById(company_id);
 
     if (!checkCompany) {
       return res.status(400).json({ code: 400, message: 'Company is not in DataBase. Incorrect Company' });
