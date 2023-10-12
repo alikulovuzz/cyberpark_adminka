@@ -125,7 +125,7 @@ router.post("/", async (req, res) => {
 });
 /**
  * @swagger
- * /api/v1/reports:
+ * /api/v1/reports/v2:
  *   post:
  *     description: Reports of Company!
  *     tags:

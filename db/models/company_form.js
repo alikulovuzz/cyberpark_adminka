@@ -22,7 +22,6 @@ const companySchema = new mongoose.Schema(
     },
     uid: {
       type: String,
-      required: [true, "Please, write your uid at least"],
       trim: true,
       min: 4,
     },
@@ -34,19 +33,16 @@ const companySchema = new mongoose.Schema(
     },
     serialNumber: {
       type: String,
-      required: [true, "Please, write your serialNumber at least"],
       trim: true,
       min: 4,
     },
     validFrom: {
       type: String,
-      required: [true, "Please, write your validFrom at least"],
       trim: true,
       min: 4,
     },
     validTo: {
       type: String,
-      required: [true, "Please, write your validTo at least"],
       trim: true,
       min: 4,
     },
@@ -64,7 +60,6 @@ const companySchema = new mongoose.Schema(
     },
     position: {
       type: String,
-      required: [true, "Please, write your position at least"],
       trim: true,
       min: 4,
     },
