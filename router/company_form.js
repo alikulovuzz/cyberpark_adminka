@@ -11,7 +11,7 @@ const { userLogger, paymentLogger } = require('../helpers/logger');
 const Company_form = require("../db/models/company_form");
 const User = require("../db/models/user");
 const sendMail = require("../helpers/sendemail")
-const RefrpeshToken=require("../db/models/refreshToken.model")
+const RefreshToken=require("../db/models/refreshToken.model")
 const getCurrentIndianDateTime=require("../helpers/time")
 
 
@@ -333,7 +333,7 @@ router.post("/signin", async (req, res) => {
     }
     // Validate if user exist in our database
     const company = await Company_form.findOne({ pinfl });
-    console.log(company)
+    
     if (company && (await bcrypt.compare(password, company.password))) {
       // Create token
       const token = jwt.sign({ id: company._id }, config.secret, {
