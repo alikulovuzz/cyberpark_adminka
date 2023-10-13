@@ -11,7 +11,7 @@ const { userLogger, paymentLogger } = require('../helpers/logger');
 const Company_form = require("../db/models/company_form");
 const User = require("../db/models/user");
 const sendMail = require("../helpers/sendemail")
-const RefreshToken=require("../db/models/refreshToken.model")
+const RefrpeshToken=require("../db/models/refreshToken.model")
 const getCurrentIndianDateTime=require("../helpers/time")
 
 
@@ -275,11 +275,11 @@ router.post("/checkCompany", async (req, res) => {
  *           properties:
  *             password:
  *               description: Passwrod of user
- *               example: 94Wqdw56qa#jsd
+ *               example: BEg6PmpgiigO4YnMTSlb
  *               type: string
  *             pinfl:
  *               description: PINFL of company
- *               example: 32808810170066
+ *               example: 207335649
  *               type: string
  *     responses:
  *       201:

@@ -17,3 +17,26 @@
 {"code":2,"codeName":"BadValue","level":"error","ok":0}
 {"code":13,"codeName":"Unauthorized","level":"error","ok":0}
 {"code":13,"codeName":"Unauthorized","level":"error","ok":0}
+{"code":13,"codeName":"Unauthorized","level":"error","ok":0}
+{"code":13,"codeName":"Unauthorized","level":"error","ok":0}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report\"","value":"name_of_report","valueType":"string"}
+{"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report111\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report111\"","value":"name_of_report111","valueType":"string"}
+{"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report111\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report111\"","value":"name_of_report111","valueType":"string"}
+{"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report111\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report111\"","value":"name_of_report111","valueType":"string"}
+{"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report111\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report111\"","value":"name_of_report111","valueType":"string"}
+{"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report111\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report111\"","value":"name_of_report111","valueType":"string"}
+{"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report111\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report111\"","value":"name_of_report111","valueType":"string"}
