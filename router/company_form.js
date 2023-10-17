@@ -342,7 +342,7 @@ router.post("/signin", async (req, res) => {
       let refreshToken = await RefreshToken.createToken(company);
       return res.status(200).json({result:"success",data:company,token:token,refreshToken:refreshToken});
     }
-    return res.status(200).json({ code: 200, message: 'user does not exist and not verified' });
+    return res.status(404).json({ code: 404, message: 'user does not exist and not verified' });
   } catch (err) {
     userLogger.error(err);
     console.log(err);
