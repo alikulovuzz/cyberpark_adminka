@@ -15,7 +15,7 @@ const auditSchema = new mongoose.Schema({
   },
   company_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Company'
+    ref: 'Company_form'
   },
   year: {
     type: String,
@@ -77,6 +77,14 @@ const auditSchema = new mongoose.Schema({
     default: 'not_in_progress',
     enum: {
       values: ['disabled', 'progress', 'finished', 'not_in_progress'],
+      message: '{VALUE} is not supported'
+    }
+  },
+  type_of_report: {
+    type: String,
+    default: 'Audit',
+    enum: {
+      values: ['Audit', 'Choraklik','Oylik'],
       message: '{VALUE} is not supported'
     }
   }

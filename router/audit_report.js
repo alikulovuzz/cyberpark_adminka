@@ -1,11 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const mongoose = require('mongoose')
-const { userLogger } = require('../helpers/logger')
-const Audit = require("../db/models/audit")
-const Company = require("../db/models/company")
-const Company_form = require("../db/models/company_form")
-
+const express = require("express");
+const router = express.Router();
+const mongoose = require("mongoose");
+const { userLogger } = require("../helpers/logger");
+const Audit = require("../db/models/audit");
+const Company = require("../db/models/company");
+const Company_form = require("../db/models/company_form");
 
 /**
  * @swagger
@@ -81,17 +80,35 @@ router.post("/", async (req, res) => {
   // Our create logic starts here
   try {
     // Get user input
-    const { name_of_report, file_link, company_id, year, quarterly,release_product,release_republic,invesment,residental_payroll,import_funds } = req.body;
+    const {
+      name_of_report,
+      file_link,
+      company_id,
+      year,
+      quarterly,
+      release_product,
+      release_republic,
+      invesment,
+      residental_payroll,
+      import_funds,
+    } = req.body;
     // Validate user input
     if (!(name_of_report && company_id && year && quarterly)) {
-      return res.status(400).json({ code: 400, message: 'All input is required' });
+      return res
+        .status(400)
+        .json({ code: 400, message: "All input is required" });
     }
     // check if user already exist
     // Validate if user exist in our database
     const checkCompany = await Company.findById(company_id);
 
     if (!checkCompany) {
-      return res.status(400).json({ code: 400, message: 'Company is not in DataBase. Incorrect Company' });
+      return res
+        .status(400)
+        .json({
+          code: 400,
+          message: "Company is not in DataBase. Incorrect Company",
+        });
       // return res.status(409).send("User Already Exist. Please Login");
     }
     //order validation
@@ -101,25 +118,29 @@ router.post("/", async (req, res) => {
       company_id: company_id,
       year: year,
       quarterly: quarterly,
-      release_product:release_product,
-      release_republic:release_republic,
-      invesment:invesment,
-      residental_payroll:residental_payroll,
-      import_funds:import_funds
+      release_product: release_product,
+      release_republic: release_republic,
+      invesment: invesment,
+      residental_payroll: residental_payroll,
+      import_funds: import_funds,
     };
     const validateReports = new Audit(value);
     // validation
     var error = validateReports.validateSync();
     if (error) {
-      return res.status(409).json({ code: 409, message: 'Validatioan error', error: error });
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
     }
     const report = await validateReports.save();
 
     return res.status(201).json(report);
   } catch (err) {
     userLogger.error(err);
-    console.log(err)
-    return res.status(500).json({ code: 500, message: 'Internal server error', err: err });
+    console.log(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
   }
   // Our register logic ends here
 });
@@ -197,16 +218,35 @@ router.post("/v2", async (req, res) => {
   // Our create logic starts here
   try {
     // Get user input
-    const { name_of_report, file_link, company_id, year, quarterly,release_product,release_republic,invesment,residental_payroll,import_funds } = req.body;
+    const {
+      name_of_report,
+      file_link,
+      company_id,
+      year,
+      quarterly,
+      release_product,
+      release_republic,
+      invesment,
+      residental_payroll,
+      type_of_report,
+      import_funds,
+    } = req.body;
     // Validate user input
     if (!(name_of_report && company_id && year && quarterly)) {
-      return res.status(400).json({ code: 400, message: 'All input is required' });
+      return res
+        .status(400)
+        .json({ code: 400, message: "All input is required" });
     }
     // check if user already exist
     // Validate if user exist in our database
     const checkCompany = await Company_form.findById(company_id);
     if (!checkCompany) {
-      return res.status(400).json({ code: 400, message: 'Company is not in DataBase. Incorrect Company' });
+      return res
+        .status(400)
+        .json({
+          code: 400,
+          message: "Company is not in DataBase. Incorrect Company",
+        });
       // return res.status(409).send("User Already Exist. Please Login");
     }
     //order validation
@@ -216,25 +256,32 @@ router.post("/v2", async (req, res) => {
       company_id: company_id,
       year: year,
       quarterly: quarterly,
-      release_product:release_product,
-      release_republic:release_republic,
-      invesment:invesment,
-      residental_payroll:residental_payroll,
-      import_funds:import_funds
+      release_product: release_product,
+      release_republic: release_republic,
+      invesment: invesment,
+      residental_payroll: residental_payroll,
+      type_of_report:type_of_report,
+      import_funds: import_funds,
     };
     const validateReports = new Audit(value);
     // validation
     var error = validateReports.validateSync();
     if (error) {
-      return res.status(409).json({ code: 409, message: 'Validatioan error', error: error });
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
     }
     const report = await validateReports.save();
 
-    return res.status(201).json({ code: 200, message: 'Success', report: report });
+    return res
+      .status(201)
+      .json({ code: 200, message: "Success", report: report });
   } catch (err) {
     userLogger.error(err);
-    console.log(err)
-    return res.status(500).json({ code: 500, message: 'Internal server error', err: err });
+    console.log(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
   }
   // Our register logic ends here
 });
@@ -313,17 +360,37 @@ router.post("/v2_update", async (req, res) => {
   // Our create logic starts here
   try {
     // Get user input
-    const { _id,name_of_report, file_link, company_id, year, quarterly,release_product,release_republic,invesment,residental_payroll,import_funds } = req.body;
+    const {
+      _id,
+      name_of_report,
+      file_link,
+      company_id,
+      year,
+      quarterly,
+      release_product,
+      release_republic,
+      invesment,
+      residental_payroll,
+      type_of_report,
+      import_funds,
+    } = req.body;
     // Validate user input
     if (!(name_of_report && company_id && year && quarterly)) {
-      return res.status(400).json({ code: 400, message: 'All input is required' });
+      return res
+        .status(400)
+        .json({ code: 400, message: "All input is required" });
     }
     // check if user already exist
     // Validate if user exist in our database
     const checkCompany = await Company_form.findById(company_id);
 
     if (!checkCompany) {
-      return res.status(400).json({ code: 400, message: 'Company is not in DataBase. Incorrect Company' });
+      return res
+        .status(400)
+        .json({
+          code: 400,
+          message: "Company is not in DataBase. Incorrect Company",
+        });
       // return res.status(409).send("User Already Exist. Please Login");
     }
     //order validation
@@ -336,38 +403,56 @@ router.post("/v2_update", async (req, res) => {
       release_product,
       release_republic,
       invesment,
+      type_of_report,
       residental_payroll,
-      import_funds
+      import_funds,
     };
     const validateReports = new Audit(value);
     // validation
     var error = validateReports.validateSync();
     if (error) {
-      return res.status(409).json({ code: 409, message: 'Validatioan error', error: error });
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
     }
-    const oldReports = await Audit.find({_id:_id})
+    const oldReports = await Audit.find({ _id: _id });
 
-    const updateReports = await Audit.findOneAndUpdate({_id:_id },
-    {
-        $set : {
-            "name_of_report" : name_of_report?name_of_report:oldReports[0].name_of_report,
-            "file_link" : file_link?file_link:oldReports[0].file_link,
-            "company_id" : company_id?company_id:oldReports[0].company_id,
-            "year" : year?year:oldReports[0].year,
-            "quarterly" : quarterly?quarterly:oldReports[0].quarterly,
-            "release_product" : release_product?release_product:oldReports[0].release_product,
-            "release_republic" : release_republic?release_republic:oldReports[0].release_republic,
-            "invesment" : invesment?invesment:oldReports[0].invesment,
-            "residental_payroll" : residental_payroll?residental_payroll:oldReports[0].residental_payroll,
-            "import_funds" : import_funds?import_funds:oldReports[0].import_funds,
-        }
-    })
+    const updateReports = await Audit.findOneAndUpdate(
+      { _id: _id },
+      {
+        $set: {
+          name_of_report: name_of_report
+            ? name_of_report
+            : oldReports[0].name_of_report,
+          file_link: file_link ? file_link : oldReports[0].file_link,
+          company_id: company_id ? company_id : oldReports[0].company_id,
+          year: year ? year : oldReports[0].year,
+          quarterly: quarterly ? quarterly : oldReports[0].quarterly,
+          release_product: release_product
+            ? release_product
+            : oldReports[0].release_product,
+          release_republic: release_republic
+            ? release_republic
+            : oldReports[0].release_republic,
+          invesment: invesment ? invesment : oldReports[0].invesment,
+          type_of_report: type_of_report ? type_of_report : oldReports[0].type_of_report,
+          residental_payroll: residental_payroll
+            ? residental_payroll
+            : oldReports[0].residental_payroll,
+          import_funds: import_funds
+            ? import_funds
+            : oldReports[0].import_funds,
+        },
+      }
+    );
 
     return res.status(201).json(updateReports);
   } catch (err) {
     userLogger.error(err);
-    console.log(err)
-    return res.status(500).json({ code: 500, message: 'Internal server error', err: err });
+    console.log(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
   }
   // Our register logic ends here
 });
@@ -435,7 +520,7 @@ router.post("/status_change", async (req, res) => {
   //id check
   if (!mongoose.Types.ObjectId.isValid(report_id)) {
     return res.status(422).json({
-      message: 'Id is not valid',
+      message: "Id is not valid",
       error: report_id,
     });
   }
@@ -443,17 +528,19 @@ router.post("/status_change", async (req, res) => {
   const reportCheck = await Audit.findById(report_id);
 
   if (!reportCheck) {
-    return res.status(400).json({ code: 404, message: 'Report not found' });
+    return res.status(400).json({ code: 404, message: "Report not found" });
   }
   const newValues = {
-    status: status
+    status: status,
   };
 
   const validateReport = new Audit(newValues);
   // validation
   const error = validateReport.validateSync();
   if (error) {
-    return res.status(409).json({ code: 409, message: 'Validatioan error', error: error });
+    return res
+      .status(409)
+      .json({ code: 409, message: "Validatioan error", error: error });
     // return res.status(409).send("Validatioan error");
   }
 
@@ -461,12 +548,19 @@ router.post("/status_change", async (req, res) => {
   const report = await Audit.findOneAndUpdate({ _id: report_id }, newValues);
 
   if (report.err) {
-    return res.status(500).json({ code: 500, message: 'There as not any reports yet', error: err })
+    return res
+      .status(500)
+      .json({ code: 500, message: "There as not any reports yet", error: err });
+  } else {
+    report.status = status;
+    return res
+      .status(200)
+      .json({
+        code: 200,
+        message: "report exist and updated",
+        oldreport: report,
+      });
   }
-  else {
-    report.status = status
-    return res.status(200).json({ code: 200, message: 'report exist and updated', oldreport: report })
-  };
 });
 
 /**
@@ -534,23 +628,138 @@ router.post("/getlist", async (req, res) => {
   // this only needed for development, in deployment is not real function
   let query = {
     quarterly, // Assuming 'quarterly' is a field in your reports
-    status // Assuming 'status' is a field in your reports
+    status, // Assuming 'status' is a field in your reports
   };
   if (!quarterly && status) {
     query = { status };
   } else if (quarterly && !status) {
     query = { quarterly };
-  }else if (!quarterly && !status) {
-    const reports = await Audit.find().populate('company_id', 'organization_name _id').exec();
-    return res.status(200).json({ code: 200, message: 'reports exist', reports: reports })
+  } else if (!quarterly && !status) {
+    const reports = await Audit.find()
+      .populate("company_id", "organization_name _id")
+      .exec();
+    return res
+      .status(200)
+      .json({ code: 200, message: "reports exist", reports: reports });
   }
-  const reports = await Audit.find(query).populate('company_id', 'organization_name _id').exec();
+  const reports = await Audit.find(query)
+    .populate("company_id", "organization_name _id")
+    .exec();
   if (reports.err || reports <= 0) {
-    return res.status(500).json({ code: 500, message: 'There as not any reports yet', error: reports.err })
+    return res
+      .status(500)
+      .json({
+        code: 500,
+        message: "There as not any reports yet",
+        error: reports.err,
+      });
+  } else {
+    return res
+      .status(200)
+      .json({ code: 200, message: "reports exist", reports: reports });
   }
-  else {
-    return res.status(200).json({ code: 200, message: 'reports exist', reports: reports })
+});
+/**
+ * @swagger
+ * /api/v1/audit/getByCompany:
+ *   post:
+ *     description: List of Reports!
+ *     tags:
+ *       - Audit
+ *     parameters:
+ *       - name: id
+ *         description: ID of company who wants to get this
+ *         in: query
+ *         required: true
+ *         example: 652d21468cf46aaaae2a6ee1
+ *         type: string
+ *       - name: type
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: query
+ *         example: audit
+ *         required: true
+ *         type: string
+ *       - name: pageNumber
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: query
+ *         required: true
+ *         example: 1
+ *         type: number
+ *       - name: pageSize
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: query
+ *         example: 10
+ *         required: true
+ *         type: number
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
+router.post("/getByCompany", async (req, res) => {
+  try{
+    var { id, type, pageNumber, pageSize } = req.query;
+  pageNumber = parseInt(pageNumber);
+  pageSize = parseInt(pageSize);
+  // this only needed for development, in deployment is not real function
+  let query = {
+    company_id: id, // Assuming 'quarterly' is a field in your reports
+    type_of_report: type, // Assuming 'status' is a field in your reports
   };
+  console.log(pageNumber+pageSize)
+  const reports = await Audit.find(query)
+    .populate("company_id", "organization_name _id")
+    .skip((pageNumber - 1) * pageSize) 
+    .limit(pageSize)
+    .exec();
+    // console.log(reports)
+  if (reports.err || reports <= 0) {
+    return res
+      .status(500)
+      .json({
+        code: 500,
+        message: "There as not any reports yet",
+        error: reports.err,
+      });
+  } else {
+    return res
+      .status(200)
+      .json({ code: 200, message: "reports exist", reports: reports });
+  }
+  }catch{
+    return res.status(500).json({code:500, message :"Internal server error"})
+  }
+
 });
 
 /**
@@ -604,27 +813,43 @@ router.post("/getlist", async (req, res) => {
  *                   description: An error message
  */
 router.delete("/delete", async (req, res) => {
-
   const id = req.query.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(422).json({
-      message: 'Id is not valid',
+      message: "Id is not valid",
       error: id,
     });
   }
 
   // this only needed for development, in deployment is not real function
   const reports = await Audit.findOneAndDelete({ _id: id });
-  // console.log(user) 
+  // console.log(user)
   if (!reports) {
-    return res.status(500).json({ code: 500, message: 'There as not any users yet', error: reports })
-  };
-  if (reports.err) {
-    return res.status(500).json({ code: 500, message: 'There as not any users yet', error: reports })
+    return res
+      .status(500)
+      .json({
+        code: 500,
+        message: "There as not any users yet",
+        error: reports,
+      });
   }
-  else {
-    return res.status(200).json({ code: 200, message: 'user exist and deleted', deleted_user: reports })
-  };
+  if (reports.err) {
+    return res
+      .status(500)
+      .json({
+        code: 500,
+        message: "There as not any users yet",
+        error: reports,
+      });
+  } else {
+    return res
+      .status(200)
+      .json({
+        code: 200,
+        message: "user exist and deleted",
+        deleted_user: reports,
+      });
+  }
 });
 module.exports = router;
