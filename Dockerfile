@@ -15,5 +15,5 @@ WORKDIR /app
 ENV HOST=0.0.0.0
 
 EXPOSE 8081
-
+ENV NODE_ENV production
 CMD ["npm","run","start"]
