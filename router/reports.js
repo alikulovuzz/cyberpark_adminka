@@ -189,7 +189,7 @@ router.post("/status_change", async (req, res) => {
   const reportCheck = await Reports.findById(report_id);
 
   if (!reportCheck) {
-    return res.status(400).json({ code: 404, message: 'Report not found' });
+    return res.status(404).json({ code: 404, message: 'Report not found' });
   }
   const newValues = {
     status: status
@@ -284,7 +284,7 @@ router.post("/getlist", async (req, res) => {
     }
   ).populate('company_id', 'organization_name _id').exec();
   if (reports.err || reports <= 0) {
-    return res.status(500).json({ code: 500, message: 'There as not any reports yet', error: reports.err })
+    return res.status(404).json({ code: 404, message: 'There as not any reports yet'})
   }
   else {
     return res.status(200).json({ code: 200, message: 'reports exist', reports: reports })

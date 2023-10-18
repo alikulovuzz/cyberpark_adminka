@@ -1,17 +1,11 @@
 const mongoose = require('mongoose');
 const dotenv=require('dotenv')
 dotenv.config()
-
-const {
-    DB_USER,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_PORT,
-    DB_NAME,
-  } = process.env;
 //mongodb://localhost:27017/test_db
 //mongodb://myuser:mypassword@localhost:27017/mydatabase
-mongoose.connect(`mongodb://myuser:mypassword@localhost:27017/mydatabase`, {
+const dbConnection =process.env.NODE_ENV=="production"?"mongodb://myuser:mypassword@localhost:27017/mydatabase":"mongodb://localhost:27017/test_db";
+
+mongoose.connect(dbConnection, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     directConnection:true

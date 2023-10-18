@@ -260,7 +260,7 @@ router.post("/v2", async (req, res) => {
       release_republic: release_republic,
       invesment: invesment,
       residental_payroll: residental_payroll,
-      type_of_report:type_of_report,
+      type_of_report: type_of_report,
       import_funds: import_funds,
     };
     const validateReports = new Audit(value);
@@ -285,7 +285,6 @@ router.post("/v2", async (req, res) => {
   }
   // Our register logic ends here
 });
-
 /**
  * @swagger
  * /api/v1/audit/v2_update:
@@ -456,7 +455,6 @@ router.post("/v2_update", async (req, res) => {
   }
   // Our register logic ends here
 });
-
 /**
  * @swagger
  * /api/v1/audit/status_change:
@@ -562,7 +560,6 @@ router.post("/status_change", async (req, res) => {
       });
   }
 });
-
 /**
  * @swagger
  * /api/v1/audit/getlist:
@@ -727,41 +724,36 @@ router.post("/getlist", async (req, res) => {
  *                   description: An error message
  */
 router.post("/getByCompany", async (req, res) => {
-  try{
+  try {
     var { id, type, pageNumber, pageSize } = req.query;
-  pageNumber = parseInt(pageNumber);
-  pageSize = parseInt(pageSize);
-  // this only needed for development, in deployment is not real function
-  let query = {
-    company_id: id, // Assuming 'quarterly' is a field in your reports
-    type_of_report: type, // Assuming 'status' is a field in your reports
-  };
-  console.log(pageNumber+pageSize)
-  const reports = await Audit.find(query)
-    .populate("company_id", "organization_name _id")
-    .skip((pageNumber - 1) * pageSize) 
-    .limit(pageSize)
-    .exec();
-    // console.log(reports)
-  if (reports.err || reports <= 0) {
-    return res
-      .status(500)
-      .json({
-        code: 500,
-        message: "There as not any reports yet",
-        error: reports.err,
-      });
-  } else {
-    return res
-      .status(200)
-      .json({ code: 200, message: "reports exist", reports: reports });
+    pageNumber = parseInt(pageNumber);
+    pageSize = parseInt(pageSize);
+    // this only needed for development, in deployment is not real function
+    let query = {
+      company_id: id, // Assuming 'quarterly' is a field in your reports
+      type_of_report: type, // Assuming 'status' is a field in your reports
+    };
+    const reports = await Audit.find(query)
+      .populate("company_id", "organization_name _id")
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .exec();
+    if (reports.err || reports <= 0) {
+      return res
+        .status(404)
+        .json({
+          code: 404,
+          message: "There as not any reports yet"
+        });
+    } else {
+      return res
+        .status(200)
+        .json({ code: 200, message: "reports exist", reports: reports });
+    }
+  } catch {
+    return res.status(500).json({ code: 500, message: "Internal server error" })
   }
-  }catch{
-    return res.status(500).json({code:500, message :"Internal server error"})
-  }
-
 });
-
 /**
  * @swagger
  * /api/v1/audit/delete:
