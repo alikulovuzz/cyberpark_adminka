@@ -32,46 +32,25 @@ const auditSchema = new mongoose.Schema({
     }
   },
   release_product: [{
-    kind_of_activity: String,
-    OKED: String,
-    year:String,
-    quarter:String,
-    month_1:String,
-    month_2:String,
-    month_3:String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ReleaseProduct'
   }],
-  release_republic: [{
-    kind_of_activity: String,
-    OKED: String,
-    country:String,
-    currency:String,
-    year:String,
-    quarter:String,
-    month_1:String,
-    month_2:String,
-    month_3:String
-  }],
-  invesment: [{
-    volume_of_invest: String,
-    org_funds: String,
-    borrowed_funds:String,
-    grants:String,
-    other:String
-  }],
-  residental_payroll: [{
-    employees : {Unit:String,period:String},
-    part_time: {Unit:String,period:String},
-    countforeign:{Unit:String,period:String},
-    performing:{Unit:String,period:String},
-    fund :{Unit:String,period:String}
-  }],
-  import_funds: [{
-    name: String,
-    unit: String,
-    qty:String,
-    acc_description:String,
-    residual_value:String
-  }],
+  release_republic: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ReleaseRepublic'
+  },
+  invesment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Invesment'
+  },
+  residental_payroll: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ResidentalPayroll'
+  },
+  import_funds: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ImportFunds'
+  },
   status: {
     type: String,
     default: 'not_in_progress',

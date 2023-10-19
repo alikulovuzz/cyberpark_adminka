@@ -42,3 +42,4 @@
 {"kind":"embedded","message":"Cast to embedded failed for value \"name_of_report111\" (type string) at path \"release_republic\" because of \"ObjectParameterError\"","name":"CastError","path":"release_republic","reason":{},"stringValue":"\"name_of_report111\"","value":"name_of_report111","valueType":"string"}
 {"level":"error"}
 {"level":"error"}
+{"level":"error"}

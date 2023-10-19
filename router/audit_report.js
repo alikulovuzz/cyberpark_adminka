@@ -1,10 +1,18 @@
 const express = require("express");
+
 const router = express.Router();
 const mongoose = require("mongoose");
 const { userLogger } = require("../helpers/logger");
 const Audit = require("../db/models/audit");
+const ReleaseRepublic = require("../db/models/release_republic");
+const ReleaseProduct = require("../db/models/release_product");
+const Invesment = require("../db/models/invesment");
+const ResidentalPayroll = require("../db/models/residental_payroll");
+const ImportFunds = require("../db/models/import_funds");
 const Company = require("../db/models/company");
 const Company_form = require("../db/models/company_form");
+const import_funds = require("../db/models/import_funds");
+const { error } = require("winston");
 
 /**
  * @swagger
@@ -235,7 +243,7 @@ router.post("/v2", async (req, res) => {
     if (!(name_of_report && company_id && year && quarterly)) {
       return res
         .status(400)
-        .json({ code: 400, message: "All input is required" });
+        .json({ code: 400, message: "Required inputs name_of_report company_id year quarterly" });
     }
     // check if user already exist
     // Validate if user exist in our database
@@ -263,7 +271,7 @@ router.post("/v2", async (req, res) => {
       type_of_report: type_of_report,
       import_funds: import_funds,
     };
-    const validateReports = new Audit(value);
+    const validateReports = await Audit(value);
     // validation
     var error = validateReports.validateSync();
     if (error) {
@@ -659,7 +667,7 @@ router.post("/getlist", async (req, res) => {
 /**
  * @swagger
  * /api/v1/audit/getByCompany:
- *   post:
+ *   get:
  *     description: List of Reports!
  *     tags:
  *       - Audit
@@ -723,7 +731,7 @@ router.post("/getlist", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/getByCompany", async (req, res) => {
+router.get("/getByCompany", async (req, res) => {
   try {
     var { id, type, pageNumber, pageSize } = req.query;
     pageNumber = parseInt(pageNumber);
@@ -734,7 +742,7 @@ router.post("/getByCompany", async (req, res) => {
       type_of_report: type, // Assuming 'status' is a field in your reports
     };
     const reports = await Audit.find(query)
-      .populate("company_id", "organization_name _id")
+      .populate("company_id release_product release_republic residental_payroll invesment import_funds",)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec();
@@ -750,7 +758,7 @@ router.post("/getByCompany", async (req, res) => {
         .status(200)
         .json({ code: 200, message: "reports exist", reports: reports });
     }
-  } catch {
+  } catch (err) {
     return res.status(500).json({ code: 500, message: "Internal server error" })
   }
 });
@@ -844,4 +852,352 @@ router.delete("/delete", async (req, res) => {
       });
   }
 });
+////////////////////////
+/**
+ * @swagger
+ * /api/v1/audit/v2:
+ *   post:
+ *     description: Reports of Company!
+ *     tags:
+ *       - Audit
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             name_of_report:
+ *               description: Name of report
+ *               example: Oylik
+ *               type: string
+ *             file_link:
+ *               description: File
+ *               example: file.pdf
+ *               type: string
+ *             company_id:
+ *               description: Company Id
+ *               example: 64e339fe0c953d151cfb82dc
+ *               type: string
+ *             year:
+ *               description: Year of report
+ *               example: 2023
+ *               type: string
+ *             quarterly:
+ *               description: Quarterly report of company
+ *               example: first
+ *               type: string
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
+router.post("/release_product", async (req, res) => {
+  // Our create logic starts here
+  try {
+    // Get user input
+    const { 
+      kind_of_activity,
+      OKED,
+      year,
+      quarter,
+      month_1,
+      month_2,
+      month_3
+    } = req.body;
+    // // check if user already exist
+    // // Validate if user exist in our database
+    // const checkCompany = await Company_form.findById(company_id);
+    // if (!checkCompany) {
+    //   return res
+    //     .status(400)
+    //     .json({
+    //       code: 400,
+    //       message: "Company is not in DataBase. Incorrect Company",
+    //     });
+    //   // return res.status(409).send("User Already Exist. Please Login");
+    // }
+    //order validation
+    const value = {
+      kind_of_activity: kind_of_activity,
+      OKED: OKED,
+      year: year,
+      quarter: quarter,
+      month_1: month_1,
+      month_2: month_2,
+      month_3: month_3
+    };
+    const validateReports = await ReleaseRepublic(value);
+    // validation
+    var error = validateReports.validateSync();
+    if (error) {
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
+    }
+    const report = await validateReports.save();
+
+    return res
+      .status(201)
+      .json({ code: 200, message: "Success", report: report });
+  } catch (err) {
+    userLogger.error(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
+  }
+  // Our register logic ends here
+});
+router.post("/release_republic", async (req, res) => {
+  // Our create logic starts here
+  try {
+    // Get user input
+    const {
+      kind_of_activity,
+      OKED,
+      country,
+      currency,
+      year,
+      quarter,
+      month_1,
+      month_2,
+      month_3
+    } = req.body;
+    // // check if user already exist
+    // // Validate if user exist in our database
+    // const checkCompany = await Company_form.findById(company_id);
+    // if (!checkCompany) {
+    //   return res
+    //     .status(400)
+    //     .json({
+    //       code: 400,
+    //       message: "Company is not in DataBase. Incorrect Company",
+    //     });
+    //   // return res.status(409).send("User Already Exist. Please Login");
+    // }
+    //order validation
+    const value = {
+      kind_of_activity,
+      OKED,
+      country,
+      currency,
+      year,
+      quarter,
+      month_1,
+      month_2,
+      month_3
+    };
+    const validateReports = await ReleaseProduct(value);
+    // validation
+    var error = validateReports.validateSync();
+    if (error) {
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
+    }
+    const report = await validateReports.save();
+
+    return res
+      .status(201)
+      .json({ code: 200, message: "Success", report: report });
+  } catch (err) {
+    userLogger.error(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
+  }
+  // Our register logic ends here
+});
+router.post("/residental_payroll", async (req, res) => {
+  // Our create logic starts here
+  try {
+    // Get user input
+    const {
+      employees,
+      part_time,
+      countforeign,
+      performing,
+      fund
+    } = req.body;
+    // // check if user already exist
+    // // Validate if user exist in our database
+    // const checkCompany = await Company_form.findById(company_id);
+    // if (!checkCompany) {
+    //   return res
+    //     .status(400)
+    //     .json({
+    //       code: 400,
+    //       message: "Company is not in DataBase. Incorrect Company",
+    //     });
+    //   // return res.status(409).send("User Already Exist. Please Login");
+    // }
+    //order validation
+    const value = {
+      employees,
+      part_time,
+      countforeign,
+      performing,
+      fund
+    };
+    console.log(value)
+    const validateReports = await ResidentalPayroll(value);
+    // validation
+    var error = validateReports.validateSync();
+    if (error) {
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
+    }
+    const report = await validateReports.save();
+
+    return res
+      .status(201)
+      .json({ code: 200, message: "Success", report: report });
+  } catch (err) {
+    userLogger.error(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
+  }
+  // Our register logic ends here
+});
+router.post("/import_funds", async (req, res) => {
+  // Our create logic starts here
+  try {
+    // Get user input
+    const {
+      name,
+      unit,
+      qty,
+      acc_description,
+      residual_value
+    } = req.body;
+    // // check if user already exist
+    // // Validate if user exist in our database
+    // const checkCompany = await Company_form.findById(company_id);
+    // if (!checkCompany) {
+    //   return res
+    //     .status(400)
+    //     .json({
+    //       code: 400,
+    //       message: "Company is not in DataBase. Incorrect Company",
+    //     });
+    //   // return res.status(409).send("User Already Exist. Please Login");
+    // }
+    //order validation
+    const value = {
+      name,
+      unit,
+      qty,
+      acc_description,
+      residual_value
+    };
+    const validateReports = await import_funds(value);
+    // validation
+    var error = validateReports.validateSync();
+    if (error) {
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
+    }
+    const report = await validateReports.save();
+
+    return res
+      .status(201)
+      .json({ code: 200, message: "Success", report: report });
+  } catch (err) {
+    userLogger.error(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
+  }
+  // Our register logic ends here
+});
+router.post("/invesment", async (req, res) => {
+  // Our create logic starts here
+  try {
+    // Get user input
+    const {
+      volume_of_invest,
+      org_funds,
+      borrowed_funds,
+      grants,
+      other
+    } = req.body;
+    // // check if user already exist
+    // // Validate if user exist in our database
+    // const checkCompany = await Company_form.findById(company_id);
+    // if (!checkCompany) {
+    //   return res
+    //     .status(400)
+    //     .json({
+    //       code: 400,
+    //       message: "Company is not in DataBase. Incorrect Company",
+    //     });
+    //   // return res.status(409).send("User Already Exist. Please Login");
+    // }
+    //order validation
+    const value = {
+      volume_of_invest,
+      org_funds,
+      borrowed_funds,
+      grants,
+      other
+    };
+    const validateReports = await Invesment(value);
+    // validation
+    var error = validateReports.validateSync();
+    if (error) {
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
+    }
+    const report = await validateReports.save();
+
+    return res
+      .status(201)
+      .json({ code: 200, message: "Success", report: report });
+  } catch (err) {
+    userLogger.error(err);
+    return res
+      .status(500)
+      .json({ code: 500, message: "Internal server error", err: err });
+  }
+  // Our register logic ends here
+});
+
+
+
+
 module.exports = router;
