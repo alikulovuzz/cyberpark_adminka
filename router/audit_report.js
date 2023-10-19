@@ -175,17 +175,41 @@ router.post("/", async (req, res) => {
  *               description: File
  *               example: file.pdf
  *               type: string
+ *             type_of_report:
+ *               description: Type of report
+ *               example: Oylik
+ *               type: string
  *             company_id:
  *               description: Company Id
  *               example: 64e339fe0c953d151cfb82dc
+ *               type: string
+ *             release_product:
+ *               description: Release Product
+ *               example: 6530b211f7e35276f9258f2d
+ *               type: string
+ *             release_republic:
+ *               description: Release Republic
+ *               example: 6530b3168c6a1772e00b5350
+ *               type: string
+ *             residental_payroll:
+ *               description: Release Payroll
+ *               example: 6530b3168c6a1772e00b5350
+ *               type: string
+ *             invesment:
+ *               description: Invesment
+ *               example: 6530b3168c6a1772e00b5350
+ *               type: string
+ *             import_funds:
+ *               description: Import Funds
+ *               example: 6530b3168c6a1772e00b5350
  *               type: string
  *             year:
  *               description: Year of report
  *               example: 2023
  *               type: string
  *             quarterly:
- *               description: Quarterly report of company
- *               example: first
+ *               description: Quarterly
+ *               example: third
  *               type: string
  *     responses:
  *       201:
@@ -852,14 +876,16 @@ router.delete("/delete", async (req, res) => {
       });
   }
 });
+
+
 ////////////////////////
 /**
  * @swagger
- * /api/v1/audit/v2:
+ * /api/v1/audit/release_product:
  *   post:
- *     description: Reports of Company!
+ *     description: Forms for Apply
  *     tags:
- *       - Audit
+ *       - Forms
  *     parameters:
  *       - name: data
  *         description: JSON object containing pageNumber and pageSize
@@ -868,26 +894,34 @@ router.delete("/delete", async (req, res) => {
  *         schema:
  *           type: object
  *           properties:
- *             name_of_report:
- *               description: Name of report
- *               example: Oylik
+ *             kind_of_activity:
+ *               description: Kind of activity
+ *               example: kind_of_activity
  *               type: string
- *             file_link:
- *               description: File
- *               example: file.pdf
- *               type: string
- *             company_id:
- *               description: Company Id
- *               example: 64e339fe0c953d151cfb82dc
+ *             OKED:
+ *               description: OKED
+ *               example: OKED
  *               type: string
  *             year:
- *               description: Year of report
- *               example: 2023
+ *               description: Year
+ *               example: year
  *               type: string
- *             quarterly:
- *               description: Quarterly report of company
- *               example: first
+ *             quarter:
+ *               description: Quarter
+ *               example: quarter
  *               type: string
+ *             month_1:
+ *               description: month_1
+ *               example: month_1
+ *               type: string
+ *             month_2:
+ *               description: month_2
+ *               example: month_2
+ *               type: string
+ *             month_3:
+ *               description:
+ *               example: 
+ *               type: 
  *     responses:
  *       201:
  *         description: Created
@@ -979,6 +1013,93 @@ router.post("/release_product", async (req, res) => {
   }
   // Our register logic ends here
 });
+
+/**
+ * @swagger
+ * /api/v1/audit/release_republic:
+ *   post:
+ *     description: Forms for Apply
+ *     tags:
+ *       - Forms
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             kind_of_activity:
+ *               description: Kind of activity
+ *               example: kind_of_activity
+ *               type: string
+ *             OKED:
+ *               description: OKED
+ *               example: OKED
+ *               type: string
+ *             country:
+ *               description: Country
+ *               example: country
+ *               type: string
+ *             currency:
+ *               description: Currency
+ *               example: currency
+ *               type: string
+ *             year:
+ *               description: Year
+ *               example: 2023
+ *               type: string
+ *             quarter:
+ *               description: Quarter
+ *               example: quarter
+ *               type: string
+ *             month_1:
+ *               description: month_1
+ *               example: month_1
+ *               type: string
+ *             month_2:
+ *               description: month_2
+ *               example: month_2
+ *               type: string
+ *             month_3:
+ *               description: month_3
+ *               example: month_3
+ *               type: string
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
 router.post("/release_republic", async (req, res) => {
   // Our create logic starts here
   try {
@@ -1039,6 +1160,107 @@ router.post("/release_republic", async (req, res) => {
   }
   // Our register logic ends here
 });
+
+/**
+ * @swagger
+ * /api/v1/audit/residental_payroll:
+ *   post:
+ *     description: Forms for applying residential payroll
+ *     tags:
+ *       - Forms
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing employee data
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             employees:
+ *               description: Employees data
+ *               type: object
+ *               properties:
+ *                 Unit:
+ *                   type: string
+ *                   example: "String"
+ *                 period:
+ *                   type: string
+ *                   example: "String"
+ *             part_time:
+ *               description: Part-time employee data
+ *               type: object
+ *               properties:
+ *                 Unit:
+ *                   type: string
+ *                   example: "String"
+ *                 period:
+ *                   type: string
+ *                   example: "String"
+ *             countforeign:
+ *               description: Foreign employee count data
+ *               type: object
+ *               properties:
+ *                 Unit:
+ *                   type: string
+ *                   example: "String"
+ *                 period:
+ *                   type: string
+ *                   example: "String"
+ *             performing:
+ *               description: Performing data
+ *               type: object
+ *               properties:
+ *                 Unit:
+ *                   type: string
+ *                   example: "String"
+ *                 period:
+ *                   type: string
+ *                   example: "String"
+ *             fund:
+ *               description: Fund data
+ *               type: object
+ *               properties:
+ *                 Unit:
+ *                   type: string
+ *                   example: "String"
+ *                 period:
+ *                   type: string
+ *                   example: "String"
+ *     responses:
+ *       '201':
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
 router.post("/residental_payroll", async (req, res) => {
   // Our create logic starts here
   try {
@@ -1092,6 +1314,93 @@ router.post("/residental_payroll", async (req, res) => {
   }
   // Our register logic ends here
 });
+
+/**
+ * @swagger
+ * /api/v1/audit/import_funds:
+ *   post:
+ *     description: Forms for Apply
+ *     tags:
+ *       - Forms
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             name:
+ *               description: Name
+ *               example: name
+ *               type: string
+ *             unit:
+ *               description: unit
+ *               example: unit
+ *               type: string
+ *             qty:
+ *               description: qty
+ *               example: qty
+ *               type: string
+ *             acc_description:
+ *               description: acc_description
+ *               example: acc_description
+ *               type: string
+ *             residual_value:
+ *               description: residual_value
+ *               example: residual_value
+ *               type: string
+ *             _id:
+ *               description: _id
+ *               example: 653118e6ff1a51b19e7551dc
+ *               type: string
+ *             createdAt:
+ *               description: createdAt
+ *               example: 2023-10-19T11:54:14.493Z
+ *               type: datetime
+ *             updatedAt:
+ *               description: updatedAt
+ *               example: 2023-10-19T11:54:14.493Z
+ *               type: datetime
+ *             __v:
+ *               description: __v
+ *               example: 0
+ *               type: string
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
 router.post("/import_funds", async (req, res) => {
   // Our create logic starts here
   try {
@@ -1144,6 +1453,93 @@ router.post("/import_funds", async (req, res) => {
   }
   // Our register logic ends here
 });
+
+/**
+ * @swagger
+ * /api/v1/audit/invesment:
+ *   post:
+ *     description: Forms for Apply
+ *     tags:
+ *       - Forms
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             volume_of_invest:
+ *               description: volume_of_invest
+ *               example: volume_of_invest
+ *               type: string
+ *             org_funds:
+ *               description: org_funds
+ *               example: org_funds
+ *               type: string
+ *             borrowed_funds:
+ *               description: borrowed_funds
+ *               example: borrowed_funds
+ *               type: string
+ *             grants:
+ *               description: grants
+ *               example: grants
+ *               type: string
+ *             _id:
+ *               description: _id
+ *               example: 65311ad3ff1a51b19e7551de
+ *               type: string
+ *             _id:
+ *               description: _id
+ *               example: 653118e6ff1a51b19e7551dc
+ *               type: string
+ *             createdAt:
+ *               description: createdAt
+ *               example: 2023-10-19T11:54:14.493Z
+ *               type: datetime
+ *             updatedAt:
+ *               description: updatedAt
+ *               example: 2023-10-19T11:54:14.493Z
+ *               type: datetime
+ *             __v:
+ *               description: __v
+ *               example: 0
+ *               type: string
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
 router.post("/invesment", async (req, res) => {
   // Our create logic starts here
   try {
