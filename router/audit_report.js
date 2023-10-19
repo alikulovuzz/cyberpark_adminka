@@ -741,11 +741,14 @@ router.get("/getByCompany", async (req, res) => {
       company_id: id, // Assuming 'quarterly' is a field in your reports
       type_of_report: type, // Assuming 'status' is a field in your reports
     };
-    var reports = await Audit.find({ _id: id }).populate('release_product release_republic residental_payroll invesment import_funds')
+    var reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec();
+      console.log("reports")
+      console.log(reports)
     if (reports.err || reports <= 0) {
+      if(reports.err){console.log(reports.err)}
       return res
         .status(404)
         .json({
