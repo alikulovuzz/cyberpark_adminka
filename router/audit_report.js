@@ -765,8 +765,7 @@ router.get("/getByCompany", async (req, res) => {
       company_id: id, // Assuming 'quarterly' is a field in your reports
       type_of_report: type, // Assuming 'status' is a field in your reports
     };
-    const reports = await Audit.find(query)
-      .populate("company_id release_product release_republic residental_payroll invesment import_funds",)
+    var reports = await Audit.find({ _id: id }).populate('release_product release_republic residental_payroll invesment import_funds')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec();
@@ -777,13 +776,23 @@ router.get("/getByCompany", async (req, res) => {
           code: 404,
           message: "There as not any reports yet"
         });
-    } else {
+    }else{
       return res
-        .status(200)
-        .json({ code: 200, message: "reports exist", reports: reports });
+      .status(200)
+      .json({ code: 200, message: "reports exist", reports: reports});
     }
+    // var release_product
+    // reports[0].release_product.forEach(async element => {
+    //   var element_one = await ReleaseProduct.find({ _id: element })
+    //   if (element_one[0]) {
+    //     release_product.push(element_one[0])
+    //   }
+    // });
+    // console.log(release_product)
+
+    
   } catch (err) {
-    return res.status(500).json({ code: 500, message: "Internal server error" })
+    return res.status(500).json({ code: 500, message: "Internal server error", err: err })
   }
 });
 /**
@@ -961,7 +970,7 @@ router.post("/release_product", async (req, res) => {
   // Our create logic starts here
   try {
     // Get user input
-    const { 
+    const {
       kind_of_activity,
       OKED,
       year,
@@ -992,7 +1001,7 @@ router.post("/release_product", async (req, res) => {
       month_2: month_2,
       month_3: month_3
     };
-    const validateReports = await ReleaseRepublic(value);
+    const validateReports = await ReleaseProduct(value);
     // validation
     var error = validateReports.validateSync();
     if (error) {
@@ -1139,7 +1148,7 @@ router.post("/release_republic", async (req, res) => {
       month_2,
       month_3
     };
-    const validateReports = await ReleaseProduct(value);
+    const validateReports = await ReleaseRepublic(value);
     // validation
     var error = validateReports.validateSync();
     if (error) {
