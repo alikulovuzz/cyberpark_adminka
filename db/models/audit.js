@@ -35,10 +35,10 @@ const auditSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ReleaseProduct'
   }],
-  release_republic: {
+  release_republic: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ReleaseRepublic'
-  },
+  }],
   invesment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Invesment'
@@ -47,10 +47,10 @@ const auditSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ResidentalPayroll'
   },
-  import_funds: {
+  import_funds: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ImportFunds'
-  },
+  }],
   status: {
     type: String,
     default: 'not_in_progress',
