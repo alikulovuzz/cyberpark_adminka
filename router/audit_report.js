@@ -742,7 +742,7 @@ router.get("/getByCompany", async (req, res) => {
       type_of_report: type, // Assuming 'status' is a field in your reports
     };
     const reports = await Audit.find(query)
-      .populate("company_id release_product release_republic residental_payroll invesment import_funds",)
+      .populate("release_product release_republic residental_payroll invesment import_funds",)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec();
@@ -759,7 +759,7 @@ router.get("/getByCompany", async (req, res) => {
         .json({ code: 200, message: "reports exist", reports: reports });
     }
   } catch (err) {
-    return res.status(500).json({ code: 500, message: "Internal server error" })
+    return res.status(500).json({ code: 500, message: "Internal server error",err:err })
   }
 });
 /**
