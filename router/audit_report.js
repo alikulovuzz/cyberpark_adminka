@@ -11,7 +11,6 @@ const ResidentalPayroll = require("../db/models/residental_payroll");
 const ImportFunds = require("../db/models/import_funds");
 const Company = require("../db/models/company");
 const Company_form = require("../db/models/company_form");
-const import_funds = require("../db/models/import_funds");
 const { error } = require("winston");
 
 /**
@@ -769,10 +768,7 @@ router.get("/getByCompany", async (req, res) => {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec();
-      console.log("reports")
-      console.log(reports)
     if (reports.err || reports <= 0) {
-      if(reports.err){console.log(reports.err)}
       return res
         .status(404)
         .json({
