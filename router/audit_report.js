@@ -767,6 +767,7 @@ router.get("/getByCompany", async (req, res) => {
     var reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
+      .sort([['updatedAt', -1]])
       .exec();
     if (reports.err || reports <= 0) {
       return res

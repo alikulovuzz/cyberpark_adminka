@@ -61,7 +61,6 @@ const auditSchema = new mongoose.Schema({
   },
   type_of_report: {
     type: String,
-    default: 'Audit',
     enum: {
       values: ['Audit', 'Choraklik','Oylik'],
       message: '{VALUE} is not supported'
