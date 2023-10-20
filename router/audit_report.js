@@ -765,9 +765,9 @@ router.get("/getByCompany", async (req, res) => {
       type_of_report: type, // Assuming 'status' is a field in your reports
     };
     var reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
+      .sort([['updatedAt', -1]])
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort([['updatedAt', -1]])
       .exec();
     if (reports.err || reports <= 0) {
       return res
