@@ -98,7 +98,7 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       });
   
       const savedFile = await fileSave.save();
-      res.status(201).json({ code: 201, data: savedFile, link:`http://localhost:8081/api/v1/uploads/${savedFile.file_link}` });
+      res.status(201).json({ code: 201, data: savedFile, link:`https://my.cyberpark.uz/api/v1/uploads/${savedFile.file_link}` });
     } catch (err) {
       if (!err.httpStatusCode) {
         err.httpStatusCode = 500;
