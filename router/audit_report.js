@@ -1359,22 +1359,6 @@ router.post("/residental_payroll", async (req, res) => {
  *               description: residual_value
  *               example: residual_value
  *               type: string
- *             _id:
- *               description: _id
- *               example: 653118e6ff1a51b19e7551dc
- *               type: string
- *             createdAt:
- *               description: createdAt
- *               example: 2023-10-19T11:54:14.493Z
- *               type: datetime
- *             updatedAt:
- *               description: updatedAt
- *               example: 2023-10-19T11:54:14.493Z
- *               type: datetime
- *             __v:
- *               description: __v
- *               example: 0
- *               type: string
  *     responses:
  *       201:
  *         description: Created
@@ -1493,26 +1477,6 @@ router.post("/import_funds", async (req, res) => {
  *             grants:
  *               description: grants
  *               example: grants
- *               type: string
- *             _id:
- *               description: _id
- *               example: 65311ad3ff1a51b19e7551de
- *               type: string
- *             _id:
- *               description: _id
- *               example: 653118e6ff1a51b19e7551dc
- *               type: string
- *             createdAt:
- *               description: createdAt
- *               example: 2023-10-19T11:54:14.493Z
- *               type: datetime
- *             updatedAt:
- *               description: updatedAt
- *               example: 2023-10-19T11:54:14.493Z
- *               type: datetime
- *             __v:
- *               description: __v
- *               example: 0
  *               type: string
  *     responses:
  *       201:
