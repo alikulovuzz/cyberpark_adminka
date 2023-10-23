@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
         cb(null, 'uploads')
     },
     filename: function (req, file, cb) {
-        cb(null, new Date().toISOString().replace(/:/g, '-')+uuid.v1()+ file.originalname)
+        cb(null, uuid.v1()+ '.'+file.originalname.match(/\.(.+)$/)?.[1] || 'No extension')
     }
 })
 
