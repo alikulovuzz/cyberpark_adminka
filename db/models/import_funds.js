@@ -5,6 +5,7 @@ const importFundsSchema = new mongoose.Schema({
   name: String,
   unit: String,
   qty:String,
+  cost:String,
   acc_description:String,
   residual_value:String
 }, { timestamps: true });

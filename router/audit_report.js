@@ -263,6 +263,8 @@ router.post("/v2", async (req, res) => {
       import_funds,
     } = req.body;
     // Validate user input
+    console.log(req.body)
+    console.log(year)
     if (!(name_of_report && company_id && year && quarterly)) {
       return res
         .status(400)
@@ -1402,6 +1404,7 @@ router.post("/import_funds", async (req, res) => {
       name,
       unit,
       qty,
+      cost,
       acc_description,
       residual_value
     } = req.body;
@@ -1422,10 +1425,11 @@ router.post("/import_funds", async (req, res) => {
       name,
       unit,
       qty,
+      cost,
       acc_description,
       residual_value
     };
-    const validateReports = await import_funds(value);
+    const validateReports = await ImportFunds(value);
     // validation
     var error = validateReports.validateSync();
     if (error) {
@@ -1439,7 +1443,7 @@ router.post("/import_funds", async (req, res) => {
       .status(201)
       .json({ code: 200, message: "Success", report: report });
   } catch (err) {
-    userLogger.error(err);
+    console.log(err);
     return res
       .status(500)
       .json({ code: 500, message: "Internal server error", err: err });
