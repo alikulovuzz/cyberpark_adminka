@@ -3,8 +3,8 @@ const dotenv=require('dotenv')
 dotenv.config()
 //mongodb://localhost:27017/test_db
 //mongodb://myuser:mypassword@localhost:27017/mydatabase
-const dbConnection ="mongodb://myuser:mypassword@localhost:27017/mydatabase"
-// console.log(dbConnection)
+const dbConnection ="mongodb://myuser:mypassword@mongodb/mydatabase"
+
 mongoose.connect(dbConnection, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
