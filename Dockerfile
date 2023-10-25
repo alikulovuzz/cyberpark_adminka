@@ -10,7 +10,7 @@ ENV NODE_ENV production
 COPY . ./
 
 FROM node:16.3.0-alpine
-COPY --from=builder /app/ /app/
+COPY --from=builder /app /app
 WORKDIR /app 
 ENV HOST=0.0.0.0
 
