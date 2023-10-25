@@ -565,7 +565,7 @@ router.post("/status_change", async (req, res) => {
     status: status,
   };
 
-  const validateReport = new Audit(newValues);
+  const validateReport = await Audit(newValues);
   // validation
   const error = validateReport.validateSync();
   if (error) {
