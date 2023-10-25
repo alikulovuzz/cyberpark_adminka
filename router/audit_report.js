@@ -665,15 +665,107 @@ router.post("/getlist", async (req, res) => {
   } else if (quarterly && !status) {
     query = { quarterly };
   } else if (!quarterly && !status) {
-    const reports = await Audit.find()
-      .populate("company_id", "organization_name _id")
+    const reports = await Audit.find().populate('release_product release_republic residental_payroll invesment import_funds')
       .exec();
     return res
       .status(200)
       .json({ code: 200, message: "reports exist", reports: reports });
   }
-  const reports = await Audit.find(query)
-    .populate("company_id", "organization_name _id")
+  const reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
+    .exec();
+  if (reports.err || reports <= 0) {
+    return res
+      .status(500)
+      .json({
+        code: 500,
+        message: "There as not any reports yet",
+        error: reports.err,
+      });
+  } else {
+    return res
+      .status(200)
+      .json({ code: 200, message: "reports exist", reports: reports });
+  }
+});
+/**
+ * @swagger
+ * /api/v1/audit/getlist_v2:
+ *   post:
+ *     description: List of Reports!
+ *     tags:
+ *       - Audit
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             type_of_report:
+ *               description: Quarterly report of company
+ *               example: Audit
+ *               type: string
+ *             status:
+ *               description: Status of report
+ *               example: progress
+ *               type: string
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
+router.post("/getlist_v2", async (req, res) => {
+  const { status, type_of_report } = req.body;
+  // console.log(req)
+  // userLogger.info(req.header)
+  // this only needed for development, in deployment is not real function
+  let query = {
+    status, // Assuming 'quarterly' is a field in your reports
+    type_of_report, // Assuming 'status' is a field in your reports
+  };
+  if (!status && type_of_report) {
+    query = { type_of_report };
+  } else if (status && !type_of_report) {
+    query = { status };
+  } else if (!status && !type_of_report) {
+    const reports = await Audit.find().populate('release_product release_republic residental_payroll invesment import_funds')
+      .exec();
+    return res
+      .status(200)
+      .json({ code: 200, message: "reports exist", reports: reports });
+  }
+  const reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
     .exec();
   if (reports.err || reports <= 0) {
     return res
@@ -778,10 +870,10 @@ router.get("/getByCompany", async (req, res) => {
           code: 404,
           message: "There as not any reports yet"
         });
-    }else{
+    } else {
       return res
-      .status(200)
-      .json({ code: 200, message: "reports exist", reports: reports});
+        .status(200)
+        .json({ code: 200, message: "reports exist", reports: reports });
     }
     // var release_product
     // reports[0].release_product.forEach(async element => {
@@ -792,7 +884,7 @@ router.get("/getByCompany", async (req, res) => {
     // });
     // console.log(release_product)
 
-    
+
   } catch (err) {
     return res.status(500).json({ code: 500, message: "Internal server error", err: err })
   }
