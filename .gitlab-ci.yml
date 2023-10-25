@@ -1,59 +1,36 @@
 stages:
-  - build
+  - publish
   - deploy
 
-before_script:
-  - |
-    # docker variables for name and tag of new image
-    export DOCKER_TAG="${CI_COMMIT_SHA:0:8}"
-    export DOCKER_REPO="$CI_REGISTRY_IMAGE"
-    export DOCKER_IMAGE="${DOCKER_REPO}:${DOCKER_TAG}"
-    export DOCKER_CACHE_IMAGE="${DOCKER_REPO}:${CI_COMMIT_REF_NAME}"
+variables:
+  TAG_LATEST: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest
+  TAG_COMMIT: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA
 
-# Build of docker image and push it to project Container registry
-build:
-  # Lightweight image with support of running docker in docker
-  image: docker:stable
+publish:
+  image: docker:latest
+  stage: publish
   services:
     - docker:dind
-  stage: build
-  when: always
   script:
-    # Login to Container registry
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    # Load existing images for build optimisation
-    - docker pull "$DOCKER_CACHE_IMAGE" || docker pull "${DOCKER_REPO}:master" || true # allow failure
-    - docker pull "$DOCKER_IMAGE" || true # allow failure
-    # Build our docker image
-    - docker build --pull --cache-from "$DOCKER_IMAGE" --cache-from "$DOCKER_CACHE_IMAGE" --cache-from "${DOCKER_REPO}:master" -t "$DOCKER_IMAGE" .
-    # Save built image to Container registry under branch name tag and commit hash tag
-    - docker push "$DOCKER_IMAGE"
-    - docker tag "$DOCKER_IMAGE" "$DOCKER_CACHE_IMAGE"
-    - docker push "$DOCKER_CACHE_IMAGE"
-  only:
-    - main
-
+    - docker build -t $TAG_COMMIT -t $TAG_LATEST .
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker push $TAG_COMMIT
+    - docker push $TAG_LATEST
 
 deploy:
-  # Lightweight image with ssh
-  image: kroniak/ssh-client
+  image: alpine:latest
   stage: deploy
-  when: always
+  before_script:
+  - apk add --update --no-cache git
   script:
-    # Set right chmod on SSH key file
-    - chmod 400 $MASTER_SSH_KEY
-    # Login to Gitlab Container registry
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}"
-    # Remove old containers and images if exists
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker rm -f ${CI_PROJECT_NAME} || true"
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker rmi \$(docker images -q ${DOCKER_REPO}) || true"
-    # Download and run new image
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}"
-      docker run
-      --name=$CI_PROJECT_NAME
-      --restart=always
-      --network="host"
-      -v "/app/storage:/src/storage"
-      -d $DOCKER_IMAGE
+    - chmod og= $MASTER_SSH_KEY
+    - apk update && apk add openssh-client
+    - ssh -i $MASTER_SSH_KEY -o StrictHostKeyChecking=no $MASTER_SSH_USER@$MASTER_HOST "docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY"
+    - ssh -i $MASTER_SSH_KEY -o StrictHostKeyChecking=no $MASTER_SSH_USER@$MASTER_HOST "docker pull $TAG_COMMIT"
+    - ssh -i $MASTER_SSH_KEY -o StrictHostKeyChecking=no $MASTER_SSH_USER@$MASTER_HOST "docker container rm -f my-app || true"
+    - ssh -i $MASTER_SSH_KEY -o StrictHostKeyChecking=no $MASTER_SSH_USER@$MASTER_HOST "docker run -d -p 8081:8081 --name my-app $TAG_COMMIT"
+  environment:
+    name: production
+    url: http://your_MASTER_HOST
   only:
     - main
