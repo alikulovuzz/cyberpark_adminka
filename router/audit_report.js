@@ -556,8 +556,8 @@ router.post("/status_change", async (req, res) => {
     });
   }
   // const value = authorSchema.validate(req.body);
-  const reportCheck = await Audit.findById(report_id);
-
+  const reportCheck = await Audit.find({ _id: report_id });
+  console.log(reportCheck)
   if (!reportCheck) {
     return res.status(400).json({ code: 404, message: "Report not found" });
   }
