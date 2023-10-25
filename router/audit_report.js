@@ -675,7 +675,7 @@ router.post("/getlist", async (req, res) => {
   } else if (quarterly && !status) {
     query = { quarterly };
   } else if (!quarterly && !status) {
-    const reports = await Audit.find().populate('release_product release_republic residental_payroll invesment import_funds')
+    const reports = await Audit.find().populate('company_id release_product release_republic residental_payroll invesment import_funds')
       .exec();
     return res
       .status(200)
@@ -868,7 +868,7 @@ router.get("/getByCompany", async (req, res) => {
       company_id: id, // Assuming 'quarterly' is a field in your reports
       type_of_report: type, // Assuming 'status' is a field in your reports
     };
-    var reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
+    var reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
       .sort([['updatedAt', -1]])
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
