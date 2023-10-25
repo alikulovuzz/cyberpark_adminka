@@ -59,7 +59,7 @@ app.use('/api/v1/status', (req, res) => {
 app.use('/api/v1', router)
 app.use('/api/v1/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.listen(PORT,HOST, (err) => {
+app.listen(PORT, (err) => {
     if (err) { console.log(`Error:${err}`) }
     console.log(`Running on port http://${HOST}:${PORT}/api/v1/api-docs, SUCCESSFULLY!`)
 })
