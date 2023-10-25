@@ -774,7 +774,7 @@ router.post("/getlist_v2", async (req, res) => {
       .status(200)
       .json({ code: 200, message: "reports exist", reports: reports });
   }
-  const reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
+  const reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
     .exec();
   if (reports.err || reports <= 0) {
     return res
