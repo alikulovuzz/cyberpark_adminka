@@ -547,50 +547,59 @@ router.post("/v2_update", async (req, res) => {
  *                   description: An error message
  */
 router.post("/status_change", async (req, res) => {
-  const { report_id, status } = req.body;
-  //id check
-  if (!mongoose.Types.ObjectId.isValid(report_id)) {
-    return res.status(422).json({
-      message: "Id is not valid",
-      error: report_id,
-    });
-  }
-  // const value = authorSchema.validate(req.body);
-  const reportCheck = await Audit.find({ _id: report_id });
-  console.log(reportCheck)
-  if (!reportCheck) {
-    return res.status(400).json({ code: 404, message: "Report not found" });
-  }
-  const newValues = {
-    status: status,
-  };
+  try {
+    const { report_id, status } = req.body;
+    //id check
+    if (!mongoose.Types.ObjectId.isValid(report_id)) {
+      return res.status(422).json({
+        message: "Id is not valid",
+        error: report_id,
+      });
+    }
+    // const value = authorSchema.validate(req.body);
+    const reportCheck = await Audit.find({ _id: report_id });
+    console.log(reportCheck)
+    if (!reportCheck) {
+      return res.status(400).json({ code: 404, message: "Report not found" });
+    }
+    const newValues = {
+      status: status,
+    };
 
-  const validateReport = await Audit(newValues);
-  // validation
-  const error = validateReport.validateSync();
-  if (error) {
-    return res
-      .status(409)
-      .json({ code: 409, message: "Validatioan error", error: error });
-    // return res.status(409).send("Validatioan error");
-  }
+    const validateReport = await Audit(newValues);
+    // validation
+    const error = validateReport.validateSync();
+    if (error) {
+      return res
+        .status(409)
+        .json({ code: 409, message: "Validatioan error", error: error });
+      // return res.status(409).send("Validatioan error");
+    }
 
-  // this only needed for development, in deployment is not real function
-  const report = await Audit.findOneAndUpdate({ _id: report_id }, newValues);
-
-  if (report.err) {
-    return res
-      .status(500)
-      .json({ code: 500, message: "There as not any reports yet", error: err });
-  } else {
-    report.status = status;
-    return res
-      .status(200)
+    // this only needed for development, in deployment is not real function
+    const report = await Audit.findOneAndUpdate({ _id: report_id }, newValues);
+    return res.status(200)
       .json({
         code: 200,
         message: "report exist and updated",
         oldreport: report,
       });
+    // if (report.err) {
+    //   return res
+    //     .status(500)
+    //     .json({ code: 500, message: "There as not any reports yet", error: err });
+    // } else {
+    //   report.status = status;
+    //   return res
+    //     .status(200)
+    //     .json({
+    //       code: 200,
+    //       message: "report exist and updated",
+    //       oldreport: report,
+    //     });
+    // }
+  } catch(err) {
+    return res.status(500).json({ code: 500, message: "Internal server error", err });
   }
 });
 /**
