@@ -485,7 +485,7 @@ router.get("/signout", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list", async (req, res) => {
+router.post("/list",verifyToken, async (req, res) => {
   try {
     let { pageNumber, pageSize } = req.body;
     pageNumber = parseInt(pageNumber);
@@ -559,7 +559,7 @@ router.post("/list", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post('/resetpassworduser', async (req, res) => {
+router.post('/resetpassworduser',verifyToken, async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) {
@@ -661,7 +661,7 @@ router.post('/resetpassworduser', async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post('/resetpassword/confirmationp/:email/:token', async (req, res) => {
+router.post('/resetpassword/confirmationp/:email/:token',verifyToken, async (req, res) => {
   const token = req.params.token;
   // const password = req.params.password;
   const password = req.body.password;
@@ -700,7 +700,7 @@ router.post('/resetpassword/confirmationp/:email/:token', async (req, res) => {
   return res.status(200).json({ code: 200, message: 'confirmation success', client: client });
 });
 //( /user/confirmation/:email/:token) in order to get list of users
-router.get('/confirmation/:email/:token', async (req, res) => {
+router.get('/confirmation/:email/:token',verifyToken, async (req, res) => {
   const token = req.params.token;
   // const { email } = req.params.email;
   // Validate user input
@@ -734,7 +734,7 @@ router.get('/confirmation/:email/:token', async (req, res) => {
   return res.status(200).json({ code: 200, message: 'confirmation success', user: user });
 });
 //( /user/resendlink) in order to get list of users
-router.post('/resendlink', async (req, res) => {
+router.post('/resendlink',verifyToken, async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) {
@@ -758,7 +758,7 @@ router.post('/resendlink', async (req, res) => {
   return res.status(200).json({ code: 200, message: 'resend success', user: user });
 });
 //( /user/update/:id) in order to update specific user
-router.post("/update/:id", async (req, res) => {
+router.post("/update/:id",verifyToken, async (req, res) => {
 
   const id = req.params.id;
   //id check
@@ -874,7 +874,7 @@ router.post("/update/:id", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.delete("/delete", async (req, res) => {
+router.delete("/delete",verifyToken, async (req, res) => {
 
   const id = req.query.id;
 
@@ -949,7 +949,7 @@ router.delete("/delete", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.get("/getone", async (req, res) => {
+router.get("/getone",verifyToken, async (req, res) => {
 
   try {
     const id = req.query.id;;
@@ -1026,7 +1026,7 @@ router.get("/getone", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.get("/me", verifyToken, async (req, res) => {
+router.get("/me", verifyToken,verifyToken, async (req, res) => {
 
   try {
     const id = req.userId;
@@ -1055,7 +1055,7 @@ router.get("/me", verifyToken, async (req, res) => {
 
 });
 //( /auth/:id) in order to get specific user
-router.patch("/auth/:id", async (req, res) => {
+router.patch("/auth/:id",verifyToken, async (req, res) => {
 
   const id = req.params.id;
   // id valid chech

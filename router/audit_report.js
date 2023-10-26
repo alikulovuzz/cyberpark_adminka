@@ -558,7 +558,7 @@ router.post("/status_change", async (req, res) => {
     }
     // const value = authorSchema.validate(req.body);
     const reportCheck = await Audit.find({ _id: report_id });
-    if (reportCheck.length<=0) {
+    if (reportCheck.length <= 0) {
       return res.status(400).json({ code: 404, message: "Report not found" });
     }
     const newValues = {
@@ -577,12 +577,12 @@ router.post("/status_change", async (req, res) => {
 
     // this only needed for development, in deployment is not real function
     const report = await Audit.findOneAndUpdate({ _id: report_id }, newValues);
-    
+
     return res.status(200)
       .json({
         code: 200,
         message: "report exist and updated",
-        report:report
+        report: report
       });
     // if (report.err) {
     //   return res
@@ -598,7 +598,7 @@ router.post("/status_change", async (req, res) => {
     //       oldreport: report,
     //     });
     // }
-  } catch(err) {
+  } catch (err) {
     return res.status(500).json({ code: 500, message: "Internal server error", err });
   }
 });
@@ -675,12 +675,14 @@ router.post("/getlist", async (req, res) => {
     query = { quarterly };
   } else if (!quarterly && !status) {
     const reports = await Audit.find().populate('company_id release_product release_republic residental_payroll invesment import_funds')
+      .sort([['updatedAt', -1]])
       .exec();
     return res
       .status(200)
       .json({ code: 200, message: "reports exist", reports: reports });
   }
   const reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
+    .sort([['updatedAt', -1]])
     .exec();
   if (reports.err || reports <= 0) {
     return res
@@ -769,12 +771,14 @@ router.post("/getlist_v2", async (req, res) => {
     query = { status };
   } else if (!status && !type_of_report) {
     const reports = await Audit.find().populate('company_id release_product release_republic residental_payroll invesment import_funds')
+      .sort([['updatedAt', -1]])
       .exec();
     return res
       .status(200)
       .json({ code: 200, message: "reports exist", reports: reports });
   }
   const reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
+    .sort([['updatedAt', -1]])
     .exec();
   if (reports.err || reports <= 0) {
     return res

@@ -232,7 +232,7 @@ router.post("/signup", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/checkCompany", async (req, res) => {
+router.post("/checkCompany",verifyToken, async (req, res) => {
 
   // Our register logic starts here
   try {
@@ -500,7 +500,7 @@ router.get("/refreshToken", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list", async (req, res) => {
+router.post("/list",verifyToken, async (req, res) => {
   try {
     let { pageNumber, pageSize } = req.body;
     pageNumber = parseInt(pageNumber);
@@ -517,7 +517,7 @@ router.post("/list", async (req, res) => {
   }
 });
 //( /user/update/:id) in order to update specific user
-router.post("/update/:id", async (req, res) => {
+router.post("/update/:id",verifyToken, async (req, res) => {
   const id = req.params.id;
   //id check
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -558,7 +558,7 @@ router.post("/update/:id", async (req, res) => {
   };
 });
 //( /user/resetpassworduser) in order to get list of users
-router.post('/resetpassworduser', async (req, res) => {
+router.post('/resetpassworduser',verifyToken, async (req, res) => {
   const { email } = req.body;
   const user = await Company_form.findOne({ email: email });
   if (!user) {
@@ -627,7 +627,7 @@ router.post('/resetpassworduser', async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.delete("/delete", async (req, res) => {
+router.delete("/delete",verifyToken, async (req, res) => {
 
   const id = req.query.id;
 
@@ -700,7 +700,7 @@ router.delete("/delete", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.get("/getone", async (req, res) => {
+router.get("/getone",verifyToken, async (req, res) => {
 
   try {
     const id = req.query.id;
