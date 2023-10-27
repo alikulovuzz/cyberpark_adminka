@@ -569,6 +569,7 @@ router.post("/status_change", async (req, res) => {
     // validation
     const error = validateReport.validateSync();
     if (error) {
+      console.log(error)
       return res
         .status(409)
         .json({ code: 409, message: "Validatioan error", error: error });
@@ -675,14 +676,14 @@ router.post("/getlist", async (req, res) => {
     query = { quarterly };
   } else if (!quarterly && !status) {
     const reports = await Audit.find().populate('company_id release_product release_republic residental_payroll invesment import_funds')
-      .sort([['updatedAt', -1]])
+      .sort([['createdAt', -1]])
       .exec();
     return res
       .status(200)
       .json({ code: 200, message: "reports exist", reports: reports });
   }
   const reports = await Audit.find(query).populate('release_product release_republic residental_payroll invesment import_funds')
-    .sort([['updatedAt', -1]])
+    .sort([['createdAt', -1]])
     .exec();
   if (reports.err || reports <= 0) {
     return res
@@ -771,14 +772,14 @@ router.post("/getlist_v2", async (req, res) => {
     query = { status };
   } else if (!status && !type_of_report) {
     const reports = await Audit.find().populate('company_id release_product release_republic residental_payroll invesment import_funds')
-      .sort([['updatedAt', -1]])
+      .sort([['createdAt', -1]])
       .exec();
     return res
       .status(200)
       .json({ code: 200, message: "reports exist", reports: reports });
   }
   const reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
-    .sort([['updatedAt', -1]])
+    .sort([['createdAt', -1]])
     .exec();
   if (reports.err || reports <= 0) {
     return res
@@ -872,7 +873,7 @@ router.get("/getByCompany", async (req, res) => {
       type_of_report: type, // Assuming 'status' is a field in your reports
     };
     var reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
-      .sort([['updatedAt', -1]])
+      .sort([['createdAt', -1]])
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .exec();
@@ -987,7 +988,7 @@ router.delete("/delete", async (req, res) => {
       .status(200)
       .json({
         code: 200,
-        message: "user exist and deleted",
+        message: "Report exist and deleted",
         deleted_user: reports,
       });
   }
