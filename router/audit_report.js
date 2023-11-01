@@ -905,6 +905,81 @@ router.get("/getByCompany", async (req, res) => {
 });
 /**
  * @swagger
+ * /api/v1/audit/getById:
+ *   get:
+ *     description: List of Reports!
+ *     tags:
+ *       - Audit
+ *     parameters:
+ *       - name: id
+ *         description: ID of company who wants to get this
+ *         in: query
+ *         required: true
+ *         example: 652d21468cf46aaaae2a6ee1
+ *         type: string
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
+router.get("/getById", async (req, res) => {
+  try {
+    var { id} = req.query;
+    // this only needed for development, in deployment is not real function
+    let query = {
+      _id: id
+    };
+    var reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
+      .sort([['createdAt', -1]])
+      .exec();
+    if (reports.err || reports <= 0) {
+      return res
+        .status(404)
+        .json({
+          code: 404,
+          message: "There as not any reports yet"
+        });
+    } else {
+      return res
+        .status(200)
+        .json({ code: 200, message: "reports exist", reports: reports });
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 500, message: "Internal server error", err: err })
+  }
+});
+/**
+ * @swagger
  * /api/v1/audit/delete:
  *   delete:
  *     description: Delete a report based on the provided ID!

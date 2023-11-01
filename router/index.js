@@ -14,7 +14,7 @@ router.use('/company',verifyToken,isAdmin, company);
 router.use('/company_form', company_form);
 router.use('/upload',verifyToken, file_uploads);
 router.use('/reports',verifyToken, reports);
-router.use('/audit',verifyToken, audit);
+router.use('/audit', audit);
 router.use('/welcome', (req, res) => {
     res.json({ name: "Hello" })
 })
