@@ -232,7 +232,7 @@ router.post("/signup", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/checkCompany",verifyToken, async (req, res) => {
+router.post("/checkCompany", async (req, res) => {
 
   // Our register logic starts here
   try {
@@ -335,7 +335,7 @@ router.post("/signin", async (req, res) => {
     }
     // Validate if user exist in our database
     const company = await Company_form.findOne({ pinfl });
-
+    console.log(await bcrypt.compare(password, company.password))
     if (company && (await bcrypt.compare(password, company.password))) {
       // Create token
       const token = jwt.sign({ id: company._id }, config.secret, {
@@ -500,7 +500,7 @@ router.get("/refreshToken", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list",verifyToken, async (req, res) => {
+router.post("/list", async (req, res) => {
   try {
     let { pageNumber, pageSize } = req.body;
     pageNumber = parseInt(pageNumber);

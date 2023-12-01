@@ -261,10 +261,10 @@ router.post("/v2", async (req, res) => {
       residental_payroll,
       type_of_report,
       import_funds,
+      kks_payer,
+      additional_refs
     } = req.body;
     // Validate user input
-    console.log(req.body)
-    console.log(year)
     if (!(name_of_report && company_id && year && quarterly)) {
       return res
         .status(400)
@@ -295,6 +295,8 @@ router.post("/v2", async (req, res) => {
       residental_payroll: residental_payroll,
       type_of_report: type_of_report,
       import_funds: import_funds,
+      kks_payer:kks_payer,
+      additional_refs:additional_refs
     };
     const validateReports = await Audit(value);
     // validation

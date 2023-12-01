@@ -252,7 +252,7 @@ router.post("/signin", async (req, res) => {
       // user
       return res.status(200).json({ data: user, token: token, refreshToken: refreshToken, authorities: authorities });
     }
-    return res.status(200).json({ code: 200, message: 'user does not exist and not verified' });
+    return res.status(400).json({ code: 400, message: 'user does not exist and not verified' });
   } catch (err) {
     userLogger.error(err);
     console.log(err);

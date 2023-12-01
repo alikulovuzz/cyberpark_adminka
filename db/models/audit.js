@@ -17,6 +17,7 @@ const auditSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company_form'
   },
+  additional_refs:[{name:String,link:String}],
   year: {
     type: String,
     default: null,
@@ -51,6 +52,14 @@ const auditSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ImportFunds'
   }],
+  kks_payer: {
+    type: String,
+    default: 'yes',
+    enum: {
+      values: ['yes', 'no'],
+      message: '{VALUE} is not supported'
+    }
+  },
   status: {
     type: String,
     default: 'not_in_progress',
