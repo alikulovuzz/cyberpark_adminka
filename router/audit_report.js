@@ -12,6 +12,7 @@ const ImportFunds = require("../db/models/import_funds");
 const Company = require("../db/models/company");
 const Company_form = require("../db/models/company_form");
 const { error } = require("winston");
+const { isAdmin } = require("../middleware/auth");
 
 /**
  * @swagger
@@ -295,8 +296,8 @@ router.post("/v2", async (req, res) => {
       residental_payroll: residental_payroll,
       type_of_report: type_of_report,
       import_funds: import_funds,
-      kks_payer:kks_payer,
-      additional_refs:additional_refs
+      kks_payer: kks_payer,
+      additional_refs: additional_refs
     };
     const validateReports = await Audit(value);
     // validation
@@ -548,9 +549,9 @@ router.post("/v2_update", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/status_change", async (req, res) => {
+router.post("/status_change",isAdmin, async (req, res) => {
   try {
-    const { report_id, status } = req.body;
+    const { report_id, status, notes } = req.body;
     //id check
     if (!mongoose.Types.ObjectId.isValid(report_id)) {
       return res.status(422).json({
@@ -565,13 +566,13 @@ router.post("/status_change", async (req, res) => {
     }
     const newValues = {
       status: status,
+      notes_from_company: notes ? notes : reportCheck.notes_from_company
     };
 
     const validateReport = await Audit(newValues);
     // validation
     const error = validateReport.validateSync();
     if (error) {
-      console.log(error)
       return res
         .status(409)
         .json({ code: 409, message: "Validatioan error", error: error });
@@ -956,7 +957,7 @@ router.get("/getByCompany", async (req, res) => {
  */
 router.get("/getById", async (req, res) => {
   try {
-    var { id} = req.query;
+    var { id } = req.query;
     // this only needed for development, in deployment is not real function
     let query = {
       _id: id
@@ -1754,6 +1755,122 @@ router.post("/invesment", async (req, res) => {
 });
 
 
+
+// /**
+//  * @swagger
+//  * /api/v1/audit/status_change:
+//  *   post:
+//  *     description: Status of Company!
+//  *     tags:
+//  *       - Audit
+//  *     parameters:
+//  *       - name: data
+//  *         description: JSON object containing pageNumber and pageSize
+//  *         in: body
+//  *         required: true
+//  *         schema:
+//  *           type: object
+//  *           properties:
+//  *             report_id:
+//  *               description: ReportId of company
+//  *               example: 64e33a200c953d151cfb82e1
+//  *               type: string
+//  *             status:
+//  *               description: Status
+//  *               example: progress
+//  *               type: boolen
+//  *     responses:
+//  *       201:
+//  *         description: Created
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: object
+//  *               properties:
+//  *                 message:
+//  *                   type: string
+//  *                   description: A success message
+//  *                 data:
+//  *                   type: object
+//  *                   description: Response data
+//  *       400:
+//  *         description: Bad Request
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: object
+//  *               properties:
+//  *                 message:
+//  *                   type: string
+//  *                   description: An error message
+//  *       500:
+//  *         description: Internal Server Error
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: object
+//  *               properties:
+//  *                 message:
+//  *                   type: string
+//  *                   description: An error message
+//  */
+// router.post("/status_change", async (req, res) => {
+//   try {
+//     const { report_id, status } = req.body;
+//     //id check
+//     if (!mongoose.Types.ObjectId.isValid(report_id)) {
+//       return res.status(422).json({
+//         message: "Id is not valid",
+//         error: report_id,
+//       });
+//     }
+//     // const value = authorSchema.validate(req.body);
+//     const reportCheck = await Audit.find({ _id: report_id });
+//     if (reportCheck.length <= 0) {
+//       return res.status(400).json({ code: 404, message: "Report not found" });
+//     }
+//     const newValues = {
+//       status: status,
+//     };
+
+//     const validateReport = await Audit(newValues);
+//     // validation
+//     const error = validateReport.validateSync();
+//     if (error) {
+//       console.log(error)
+//       return res
+//         .status(409)
+//         .json({ code: 409, message: "Validatioan error", error: error });
+//       // return res.status(409).send("Validatioan error");
+//     }
+
+//     // this only needed for development, in deployment is not real function
+//     const report = await Audit.findOneAndUpdate({ _id: report_id }, newValues);
+
+//     return res.status(200)
+//       .json({
+//         code: 200,
+//         message: "report exist and updated",
+//         report: report
+//       });
+//     // if (report.err) {
+//     //   return res
+//     //     .status(500)
+//     //     .json({ code: 500, message: "There as not any reports yet", error: err });
+//     // } else {
+//     //   report.status = status;
+//     //   return res
+//     //     .status(200)
+//     //     .json({
+//     //       code: 200,
+//     //       message: "report exist and updated",
+//     //       oldreport: report,
+//     //     });
+//     // }
+//   } catch (err) {
+//     return res.status(500).json({ code: 500, message: "Internal server error", err });
+//   }
+// });
 
 
 module.exports = router;

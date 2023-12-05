@@ -60,6 +60,10 @@ const auditSchema = new mongoose.Schema({
       message: '{VALUE} is not supported'
     }
   },
+  notes_from_company: {
+    type: String,
+    default: 'Rahmat sizning hisobotingiz qabul qilindi javobi tez orada elon qilinadi'
+  },
   status: {
     type: String,
     default: 'not_in_progress',
