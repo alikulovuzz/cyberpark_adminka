@@ -11,7 +11,7 @@ const ResidentalPayroll = require("../db/models/residental_payroll");
 const ImportFunds = require("../db/models/import_funds");
 const Company = require("../db/models/company");
 const Company_form = require("../db/models/company_form");
-const { error} = require("winston");
+const { error } = require("winston");
 const { isAdmin } = require("../middleware/auth");
 
 /**
@@ -801,13 +801,16 @@ router.post("/getlist_v2", async (req, res) => {
             return user; // return only users with email matching 'type: "Gmail"' query
           }
         });
-        
+        return res
+          .status(200)
+          .json({ code: 200, message: "reports exist", reports: searchWithPinfl });
       }
       return res
         .status(200)
-        .json({ code: 200, message: "reports exist", reports: searchWithPinfl });
+        .json({ code: 200, message: "reports exist", reports: reports });
     }
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ code: 500, message: "Internal server error", err: error })
   }
 });
