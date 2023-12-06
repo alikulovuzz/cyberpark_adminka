@@ -11,7 +11,7 @@ const ResidentalPayroll = require("../db/models/residental_payroll");
 const ImportFunds = require("../db/models/import_funds");
 const Company = require("../db/models/company");
 const Company_form = require("../db/models/company_form");
-const { error } = require("winston");
+const { error} = require("winston");
 const { isAdmin } = require("../middleware/auth");
 
 /**
@@ -549,7 +549,7 @@ router.post("/v2_update", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/status_change",isAdmin, async (req, res) => {
+router.post("/status_change", isAdmin, async (req, res) => {
   try {
     const { report_id, status, notes } = req.body;
     //id check
@@ -761,41 +761,54 @@ router.post("/getlist", async (req, res) => {
  *                   description: An error message
  */
 router.post("/getlist_v2", async (req, res) => {
-  const { status, type_of_report } = req.body;
-  // console.log(req)
-  // userLogger.info(req.header)
-  // this only needed for development, in deployment is not real function
-  let query = {
-    status, // Assuming 'quarterly' is a field in your reports
-    type_of_report, // Assuming 'status' is a field in your reports
-  };
-  if (!status && type_of_report) {
-    query = { type_of_report };
-  } else if (status && !type_of_report) {
-    query = { status };
-  } else if (!status && !type_of_report) {
-    const reports = await Audit.find().populate('company_id release_product release_republic residental_payroll invesment import_funds')
+  try {
+    const { status, type_of_report, pinfl } = req.body;
+    // console.log(req)
+    // userLogger.info(req.header)
+    // this only needed for development, in deployment is not real function
+    let query = {
+      status, // Assuming 'quarterly' is a field in your reports
+      type_of_report,
+      pinfl: { $regex: "^" + pinfl } // Assuming 'status' is a field in your reports
+    };
+    if (!status && type_of_report) {
+      query = {
+        type_of_report,
+      };
+    } else if (status && !type_of_report) {
+      query = {
+        status,
+      };
+    } else if (!status && !type_of_report) {
+      query = {};
+    }
+    const reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
       .sort([['createdAt', -1]])
       .exec();
-    return res
-      .status(200)
-      .json({ code: 200, message: "reports exist", reports: reports });
-  }
-  const reports = await Audit.find(query).populate('company_id release_product release_republic residental_payroll invesment import_funds')
-    .sort([['createdAt', -1]])
-    .exec();
-  if (reports.err || reports <= 0) {
-    return res
-      .status(500)
-      .json({
-        code: 500,
-        message: "There as not any reports yet",
-        error: reports.err,
-      });
-  } else {
-    return res
-      .status(200)
-      .json({ code: 200, message: "reports exist", reports: reports });
+    if (reports <= 0) {
+      return res
+        .status(500)
+        .json({
+          code: 500,
+          message: "There as not any reports yet",
+          error: reports.err,
+        });
+    } else {
+      if (pinfl) {
+        let searchWithPinfl = reports.filter((user) => {
+          console.log(user?.company_id?.pinfl)
+          if (user?.company_id?.pinfl.includes(pinfl)) {
+            return user; // return only users with email matching 'type: "Gmail"' query
+          }
+        });
+        
+      }
+      return res
+        .status(200)
+        .json({ code: 200, message: "reports exist", reports: searchWithPinfl });
+    }
+  } catch (error) {
+    return res.status(500).json({ code: 500, message: "Internal server error", err: err })
   }
 });
 /**
