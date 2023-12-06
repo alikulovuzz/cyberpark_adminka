@@ -808,7 +808,7 @@ router.post("/getlist_v2", async (req, res) => {
         .json({ code: 200, message: "reports exist", reports: searchWithPinfl });
     }
   } catch (error) {
-    return res.status(500).json({ code: 500, message: "Internal server error", err: err })
+    return res.status(500).json({ code: 500, message: "Internal server error", err: error })
   }
 });
 /**
