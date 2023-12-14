@@ -16,7 +16,7 @@ var router = express.Router();
 router.use('/user', user);
 router.use('/company',verifyToken,isAdmin, company);
 router.use('/company_form', company_form);
-router.use('/upload',rateLimit, file_uploads);
+router.use('/upload', file_uploads);
 router.use('/reports',verifyToken, reports);
 router.use('/audit',verifyToken, audit);
 router.use('/application_form', application_form);
