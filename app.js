@@ -17,26 +17,26 @@ const PORT = process.env.PORT || '8081'
 
 app.use(morgan('dev'))
 app.use(cors())
-app.use(bodyParser.json({limit: '100mb', extended: true}));
-app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
+app.use(bodyParser.json({ limit: '100mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 const swaggerOptions = {
-    swaggerDefinition: {
-      info: {
-        title: "Cyber park Adminka API",
-        version: '1.0.0',
-      },
+  swaggerDefinition: {
+    info: {
+      title: "Cyber park Adminka API",
+      version: '1.0.0',
     },
-    apis: ["app.js","./router/*.js"],
-    securityDefinitions: {
-      auth: {
-        type: 'basic'
-      }
+  },
+  apis: ["app.js", "./router/*.js"],
+  securityDefinitions: {
+    auth: {
+      type: 'basic'
     }
-  };  
+  }
+};
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api/v1/api-docs',basicAuth({
-  users: {'admin': '8723'},
+app.use('/api/v1/api-docs', basicAuth({
+  users: { 'admin': '8723' },
   challenge: true,
 }), swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
@@ -53,13 +53,13 @@ app.use('/api/v1/api-docs',basicAuth({
  * 
  */
 app.use('/api/v1/status', (req, res) => {
-    res.json({ Hello: "World!" })
+  res.json({ Hello: "World!" })
 })
 
 app.use('/api/v1', router)
 app.use('/api/v1/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(PORT, (err) => {
-    if (err) { console.log(`Error:${err}`) }
-    console.log(`Running on port http://${HOST}:${PORT}/api/v1/api-docs, SUCCESSFULLY!`)
+  if (err) { console.log(`Error:${err}`) }
+  console.log(`Running on port http://${HOST}:${PORT}/api/v1/api-docs, SUCCESSFULLY!`)
 })
