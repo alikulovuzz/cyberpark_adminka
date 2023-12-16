@@ -8,7 +8,7 @@ const getCurrentIndianDateTime = require("../helpers/time")
 
 /**
  * @swagger
- * /api/v1/company_form/signup:
+ * /api/v1/application_form/create:
  *   post:
  *     description: Sing up new Company to Server!
  *     tags:
@@ -109,14 +109,14 @@ router.post("/create", rateLimit, async (req, res) => {
   // Our register logic starts here
   try {
     // Get user input
-    const { email, requirements, application: app, constituent_documents, description, license, copy_passport, project_description, candidate_application, business_plan } = req.body;
+    const { company,email, requirements, application: app, constituent_documents, description, license, copy_passport, project_description, candidate_application, business_plan } = req.body;
     // Validate user input
-    console.log(!(email && requirements && app && constituent_documents && description && license && copy_passport && project_description && candidate_application && business_plan))
-    if (!(email && requirements && app)) {
+    if (!(email && requirements && app && constituent_documents && description && license && copy_passport && project_description && candidate_application && business_plan)) {
       return res.status(400).json({ code: 400, message: 'All input is required' });
     }
     //user validated
     const value = {
+      company,
       email,
       requirements,
       application: app,
@@ -149,80 +149,78 @@ router.post("/create", rateLimit, async (req, res) => {
   }
   // Our register logic ends here
 });
-// /**
-//  * @swagger
-//  * /api/v1/company_form/list:
-//  *   post:
-//  *     description: Get all company's data!
-//  *     tags:
-//  *       - V2 Company
-//  *     parameters:
-//  *       - name: data
-//  *         description: JSON object containing pageNumber and pageSize
-//  *         in: body
-//  *         required: true
-//  *         schema:
-//  *           type: object
-//  *           properties:
-//  *             pageNumber:
-//  *               description: Page number
-//  *               type: string
-//  *               example: 1
-//  *             pageSize:
-//  *               description: Page size
-//  *               type: string
-//  *               example: 10
-//  *     responses:
-//  *       201:
-//  *         description: Created
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   description: A success message
-//  *                 data:
-//  *                   type: object
-//  *                   description: Response data
-//  *       400:
-//  *         description: Bad Request
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   description: An error message
-//  *       500:
-//  *         description: Internal Server Error
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   description: An error message
-//  */
-// router.post("/list", async (req, res) => {
-//   try {
-//     let { pageNumber, pageSize } = req.body;
-//     pageNumber = parseInt(pageNumber);
-//     pageSize = parseInt(pageSize);
-//     // this only needed for development, in deployment is not real function
-//     const count = await Company_form.countDocuments()
-//     const company = await Company_form.find().sort({ created_at: 1 }).skip((pageNumber - 1) * pageSize).limit(pageSize);
-//     // console.log(user)
-//     return res.status(202).json({ code: 202, count: count, page: parseInt(count / pageSize) + 1, list_of_companies: company });
-//   } catch (err) {
-//     userLogger.error(err);
-//     console.log(err);
-//     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
-//   }
-// });
+/**
+ * @swagger
+ * /api/v1/application_form/list:
+ *   post:
+ *     description: Get all company's data!
+ *     tags:
+ *       - V2 Company
+ *     parameters:
+ *       - name: data
+ *         description: JSON object containing pageNumber and pageSize
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             pageNumber:
+ *               description: Page number
+ *               type: string
+ *               example: 1
+ *             pageSize:
+ *               description: Page size
+ *               type: string
+ *               example: 10
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message
+ *                 data:
+ *                   type: object
+ *                   description: Response data
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message
+ */
+router.post("/list", async (req, res) => {
+  try {
+    let { pageNumber, pageSize } = req.body;
+    pageNumber = parseInt(pageNumber);
+    pageSize = parseInt(pageSize);
+    // this only needed for development, in deployment is not real function
+    const count = await Application_form.countDocuments()
+    const company = await Application_form.find().sort({ created_at: 1 }).skip((pageNumber - 1) * pageSize).limit(pageSize);    return res.status(202).json({ code: 202, count: count, page: parseInt(count / pageSize) + 1, list_of_companies: company });
+  } catch (err) {
+    userLogger.error(err);
+    console.log(err);
+    return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
+  }
+});
 // //( /user/update/:id) in order to update specific user
 // router.post("/update/:id",verifyToken, async (req, res) => {
 //   const id = req.params.id;
