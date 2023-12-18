@@ -5,7 +5,6 @@ const applicationSchema = new mongoose.Schema(
     company: {
       type: String,
       trim: true,
-      lowercase: true,
       // unique: true,
       // required: 'Email address is required',
       // validate: [validateEmail, 'Please fill a valid email address'],

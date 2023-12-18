@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
 const rateLimit = require('../middleware/request_limitter')
 const Application_form = require("../db/models/application_form");
 const getCurrentIndianDateTime = require("../helpers/time");
 const { userLogger } = require('../helpers/logger');
+const { verifyToken } = require('../middleware/auth');
 
 
 /**
@@ -313,30 +315,30 @@ router.post("/list", async (req, res) => {
 //  *                   type: string
 //  *                   description: An error message
 //  */
-// router.delete("/delete",verifyToken, async (req, res) => {
+router.delete("/delete",verifyToken, async (req, res) => {
 
-//   const id = req.query.id;
+  const id = req.query.id;
 
-//   if (!mongoose.Types.ObjectId.isValid(id)) {
-//     return res.status(422).json({
-//       message: 'Id is not valid',
-//       error: id,
-//     });
-//   }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(422).json({
+      message: 'Id is not valid',
+      error: id,
+    });
+  }
 
-//   // this only needed for development, in deployment is not real function
-//   const user = await Company_form.findOneAndDelete({ _id: id });
-//   // console.log(user) 
-//   if (!user) {
-//     return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
-//   };
-//   if (user.err) {
-//     return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
-//   }
-//   else {
-//     return res.status(200).json({ code: 200, message: 'user exist and deleted', deleted_user: user })
-//   };
-// });
+  // this only needed for development, in deployment is not real function
+  const user = await Application_form.findOneAndDelete({ _id: id });
+  // console.log(user) 
+  if (!user) {
+    return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
+  };
+  if (user.err) {
+    return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
+  }
+  else {
+    return res.status(200).json({ code: 200, message: 'user exist and deleted', deleted_user: user })
+  };
+});
 // /**
 //  * @swagger
 //  * /api/v1/company_form/getone:
