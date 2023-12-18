@@ -408,7 +408,7 @@ router.get("/getone", verifyToken, async (req, res) => {
       return res.status(500).json({ code: 500, message: 'There as not any users yet', error: err })
     }
     else {
-      return res.status(200).json({ code: 200, message: 'user exist', user: user })
+      return res.status(200).json({ code: 200, message: 'user exist', applications: user })
     };
   } catch (err) {
     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
