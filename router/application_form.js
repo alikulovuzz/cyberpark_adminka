@@ -112,7 +112,7 @@ router.post("/create", rateLimit, async (req, res) => {
   // Our register logic starts here
   try {
     // Get user input
-    const { company,email, requirements, application: app, constituent_documents, description, license, copy_passport, project_description, candidate_application, business_plan } = req.body;
+    const { company, email, requirements, application: app, constituent_documents, description, license, copy_passport, project_description, candidate_application, business_plan } = req.body;
     // Validate user input
     if (!(email && requirements && app && constituent_documents && description && license && copy_passport && project_description && candidate_application && business_plan)) {
       return res.status(400).json({ code: 400, message: 'All input is required' });
@@ -217,7 +217,7 @@ router.post("/list", async (req, res) => {
     pageSize = parseInt(pageSize);
     // this only needed for development, in deployment is not real function
     const count = await Application_form.countDocuments()
-    const company = await Application_form.find().sort({ created_at: 1 }).skip((pageNumber - 1) * pageSize).limit(pageSize);    return res.status(202).json({ code: 202, count: count, page: parseInt(count / pageSize) + 1, list_of_companies: company });
+    const company = await Application_form.find().sort({ created_at: 1 }).skip((pageNumber - 1) * pageSize).limit(pageSize); return res.status(202).json({ code: 202, count: count, page: parseInt(count / pageSize) + 1, list_of_companies: company });
   } catch (err) {
     userLogger.error(err);
     console.log(err);
@@ -315,29 +315,31 @@ router.post("/list", async (req, res) => {
 //  *                   type: string
 //  *                   description: An error message
 //  */
-router.delete("/delete",verifyToken, async (req, res) => {
-
-  const id = req.query.id;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(422).json({
-      message: 'Id is not valid',
-      error: id,
-    });
+router.delete("/delete", verifyToken, async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(422).json({
+        message: 'Id is not valid',
+        error: id,
+      });
+    }
+    // this only needed for development, in deployment is not real function
+    const user = await Application_form.findOneAndDelete({ _id: id });
+    // console.log(user) 
+    if (!user) {
+      return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
+    };
+    if (user.err) {
+      return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
+    }
+    else {
+      return res.status(200).json({ code: 200, message: 'user exist and deleted', deleted_user: user })
+    };
+  } catch (error) {
+    return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
   }
 
-  // this only needed for development, in deployment is not real function
-  const user = await Application_form.findOneAndDelete({ _id: id });
-  // console.log(user) 
-  if (!user) {
-    return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
-  };
-  if (user.err) {
-    return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
-  }
-  else {
-    return res.status(200).json({ code: 200, message: 'user exist and deleted', deleted_user: user })
-  };
 });
 // /**
 //  * @swagger
@@ -388,28 +390,28 @@ router.delete("/delete",verifyToken, async (req, res) => {
 //  *                   type: string
 //  *                   description: An error message
 //  */
-// router.get("/getone",verifyToken, async (req, res) => {
+router.get("/getone", verifyToken, async (req, res) => {
 
-//   try {
-//     const id = req.query.id;
-//     // id valid chech
-//     if (!mongoose.Types.ObjectId.isValid(id)) {
-//       return res.status(422).json({
-//         message: 'Id is not valid',
-//         error: id,
-//       });
-//     }
-//     // this only needed for development, in deployment is not real function
-//     const user = await Company_form.find({ _id: id });
+  try {
+    const id = req.query.id;
+    // id valid chech
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(422).json({
+        message: 'Id is not valid',
+        error: id,
+      });
+    }
+    // this only needed for development, in deployment is not real function
+    const user = await Application_form.find({ _id: id });
 
-//     if (user.err) {
-//       return res.status(500).json({ code: 500, message: 'There as not any users yet', error: err })
-//     }
-//     else {
-//       return res.status(200).json({ code: 200, message: 'user exist', user: user })
-//     };
-//   } catch (err) {
-//     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
-//   }
-// });
+    if (user.err) {
+      return res.status(500).json({ code: 500, message: 'There as not any users yet', error: err })
+    }
+    else {
+      return res.status(200).json({ code: 200, message: 'user exist', user: user })
+    };
+  } catch (err) {
+    return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
+  }
+});
 module.exports = router;
