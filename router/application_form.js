@@ -111,8 +111,7 @@ router.post("/create", rateLimit, async (req, res) => {
     // Get user input
     const { email, requirements, application: app, constituent_documents, description, license, copy_passport, project_description, candidate_application, business_plan } = req.body;
     // Validate user input
-    console.log(!(email && requirements && app && constituent_documents && description && license && copy_passport && project_description && candidate_application && business_plan))
-    if (!(email && requirements && app)) {
+    if (!(email && requirements && app && constituent_documents && description && license && copy_passport && project_description && candidate_application && business_plan)) {
       return res.status(400).json({ code: 400, message: 'All input is required' });
     }
     //user validated
