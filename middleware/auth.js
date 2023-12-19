@@ -42,7 +42,7 @@ const isAdmin = (req, res, next) => {
       }
       console.log(user[0].role.length)
       for (let i = 0; i < user[0].role.length; i++) {
-        if (user[i].role == "admin") {
+        if (user[i]?.role == "admin") {
           next();
           return;
         }
