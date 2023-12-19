@@ -107,7 +107,7 @@ const { verifyToken, isAdmin } = require('../middleware/auth');
  *                   type: string
  *                   description: An error message
  */
-router.post("/create", rateLimit,verifyToken,isAdmin, async (req, res) => {
+router.post("/create", rateLimit, async (req, res) => {
 
   // Our register logic starts here
   try {
