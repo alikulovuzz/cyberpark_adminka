@@ -760,7 +760,7 @@ router.post("/getlist", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/getlist_v2", async (req, res) => {
+router.post("/getlist_v2",isAdmin, async (req, res) => {
   try {
     const { status, type_of_report, pinfl } = req.body;
     // console.log(req)
@@ -1047,7 +1047,7 @@ router.get("/getById", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.delete("/delete", async (req, res) => {
+router.delete("/delete",isAdmin, async (req, res) => {
   const id = req.query.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {

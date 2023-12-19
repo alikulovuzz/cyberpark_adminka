@@ -6,7 +6,7 @@ const rateLimit = require('../middleware/request_limitter')
 const Application_form = require("../db/models/application_form");
 const getCurrentIndianDateTime = require("../helpers/time");
 const { userLogger } = require('../helpers/logger');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, isAdmin } = require('../middleware/auth');
 
 
 /**
@@ -107,7 +107,7 @@ const { verifyToken } = require('../middleware/auth');
  *                   type: string
  *                   description: An error message
  */
-router.post("/create", rateLimit, async (req, res) => {
+router.post("/create", rateLimit,verifyToken,isAdmin, async (req, res) => {
 
   // Our register logic starts here
   try {
@@ -210,7 +210,7 @@ router.post("/create", rateLimit, async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list", async (req, res) => {
+router.post("/list",verifyToken,isAdmin, async (req, res) => {
   try {
     let { pageNumber, pageSize } = req.body;
     pageNumber = parseInt(pageNumber);
@@ -315,7 +315,7 @@ router.post("/list", async (req, res) => {
 //  *                   type: string
 //  *                   description: An error message
 //  */
-router.delete("/delete", verifyToken, async (req, res) => {
+router.delete("/delete", verifyToken,isAdmin, async (req, res) => {
   try {
     const id = req.query.id;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -390,7 +390,7 @@ router.delete("/delete", verifyToken, async (req, res) => {
 //  *                   type: string
 //  *                   description: An error message
 //  */
-router.get("/getone", verifyToken, async (req, res) => {
+router.get("/getone", verifyToken,isAdmin, async (req, res) => {
 
   try {
     const id = req.query.id;

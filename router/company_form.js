@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const { verifyToken, isCompany } = require('../middleware/auth')
+const { verifyToken, isCompany, isAdmin } = require('../middleware/auth')
 const rateLimit = require('../helpers/request_limitter');
 const { userLogger, paymentLogger } = require('../helpers/logger');
 const Company_form = require("../db/models/company_form");
@@ -500,7 +500,7 @@ router.get("/refreshToken", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list", async (req, res) => {
+router.post("/list",verifyToken,isAdmin, async (req, res) => {
   try {
     let { pageNumber, pageSize } = req.body;
     pageNumber = parseInt(pageNumber);
