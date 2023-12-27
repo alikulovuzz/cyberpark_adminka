@@ -129,7 +129,9 @@ router.post("/create", rateLimit, async (req, res) => {
       copy_passport,
       project_description,
       candidate_application,
-      business_plan
+      business_plan,
+      created_at: getCurrentIndianDateTime(),
+      updated_at: getCurrentIndianDateTime()
     };
     const application = new Application_form(value);
     // validation
