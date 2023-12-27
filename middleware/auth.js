@@ -40,7 +40,7 @@ const isAdmin = (req, res, next) => {
         res.status(500).send({ message: err });
         return;
       }
-      console.log(user[0].role.length)
+      // console.log(user[0].role.length)
       for (let i = 0; i < user[0].role.length; i++) {
         if (user[i]?.role == "admin") {
           next();
