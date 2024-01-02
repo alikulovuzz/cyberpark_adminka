@@ -1077,4 +1077,28 @@ router.patch("/auth/:id",verifyToken, async (req, res) => {
     return res.status(200).json({ code: 200, message: 'user exist', user: user })
   };
 });
+//( /user/update/:id) in order to update specific user
+router.post("/changepassword/:id",verifyToken, async (req, res) => {
+
+  const id = req.params.id;
+  //id check
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(422).json({
+      message: 'Id is not valid',
+      error: id,
+    });
+  }
+  const { password, newPassword } = req.body;
+  // const value = authorSchema.validate(req.body);
+  const user = await User.findById(id);
+  if (user && (await bcrypt.compare(password, user.password))) {
+    //generate new password
+    encryptedPassword = await bcrypt.hash(newPassword, 10);
+    // user
+    const user = await User.findOneAndUpdate({ _id: id }, { password: encryptedPassword });
+
+    return res.status(200).json({ status: 200, message: "success" });
+  }
+  return res.status(400).json({ code: 400, message: 'user password is not matched' });
+});
 module.exports = router;
