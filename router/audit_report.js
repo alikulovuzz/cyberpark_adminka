@@ -12,7 +12,7 @@ const ImportFunds = require("../db/models/import_funds");
 const Company = require("../db/models/company");
 const Company_form = require("../db/models/company_form");
 const { error } = require("winston");
-const { isAdmin } = require("../middleware/auth");
+const { isAdmin, userCheck, permissionCheck } = require("../middleware/auth");
 
 /**
  * @swagger
@@ -549,7 +549,7 @@ router.post("/v2_update", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/status_change", isAdmin, async (req, res) => {
+router.post("/status_change", userCheck,permissionCheck(['admin']), async (req, res) => {
   try {
     const { report_id, status, notes } = req.body;
     //id check
@@ -760,7 +760,7 @@ router.post("/getlist", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/getlist_v2",isAdmin, async (req, res) => {
+router.post("/getlist_v2",userCheck,permissionCheck(['admin']), async (req, res) => {
   try {
     const { status, type_of_report, pinfl } = req.body;
     // console.log(req)
@@ -1047,7 +1047,7 @@ router.get("/getById", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.delete("/delete",isAdmin, async (req, res) => {
+router.delete("/delete",userCheck,permissionCheck(['admin']), async (req, res) => {
   const id = req.query.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {

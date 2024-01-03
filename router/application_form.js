@@ -6,7 +6,7 @@ const rateLimit = require('../middleware/request_limitter')
 const Application_form = require("../db/models/application_form");
 const getCurrentIndianDateTime = require("../helpers/time");
 const { userLogger } = require('../helpers/logger');
-const { verifyToken, isAdmin } = require('../middleware/auth');
+const { verifyToken, isAdmin, userCheck, permissionCheck } = require('../middleware/auth');
 
 
 /**
@@ -212,7 +212,7 @@ router.post("/create", rateLimit, async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list",verifyToken,isAdmin, async (req, res) => {
+router.post("/list",verifyToken,userCheck,permissionCheck(['admin','crm']), async (req, res) => {
   try {
     let { pageNumber, pageSize } = req.body;
     pageNumber = parseInt(pageNumber);
@@ -317,7 +317,7 @@ router.post("/list",verifyToken,isAdmin, async (req, res) => {
 //  *                   type: string
 //  *                   description: An error message
 //  */
-router.delete("/delete", verifyToken,isAdmin, async (req, res) => {
+router.delete("/delete", verifyToken,userCheck,permissionCheck(['admin','crm']), async (req, res) => {
   try {
     const id = req.query.id;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -392,7 +392,7 @@ router.delete("/delete", verifyToken,isAdmin, async (req, res) => {
 //  *                   type: string
 //  *                   description: An error message
 //  */
-router.get("/getone", verifyToken,isAdmin, async (req, res) => {
+router.get("/getone", verifyToken,userCheck,permissionCheck(['admin','crm']), async (req, res) => {
 
   try {
     const id = req.query.id;

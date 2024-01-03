@@ -52,7 +52,26 @@ const isAdmin = (req, res, next) => {
     }
   );
 };
-
+const userCheck = (req, res, next) => {
+  User.find(
+    {
+      _id: { $in: req.userId }
+    },
+    (err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      if (user[0].role) {
+        req.role = user[0].role;
+        next()
+        return;
+      }
+      res.status(403).send({ message: "Internal server Error" });
+      return;
+    }
+  );
+};
 const isCompany = (req, res, next) => {
   Company.find(
     {
@@ -103,12 +122,25 @@ const isModerator = (req, res, next) => {
     );
   });
 };
-
+const permissionCheck = (permissions) => {
+  return (req, res, next) => {
+    var roles=req?.role?.filter(element => permissions.includes(element))
+    console.log(roles.length>0)
+    if (roles.length>0) {
+      next();
+      return;
+    }
+    res.status(403).send({ status:403,message: "Permission denied!" });
+    return;
+  }
+};
 
 const authJwt = {
   verifyToken,
   isAdmin,
   isCompany,
-  isModerator
+  isModerator,
+  userCheck,
+  permissionCheck
 };
 module.exports = authJwt;
