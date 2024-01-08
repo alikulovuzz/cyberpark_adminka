@@ -15,8 +15,18 @@ dotenv.config()
 const HOST = process.env.HOST || '0.0.0.0'
 const PORT = process.env.PORT || '8081'
 
+const corsOptions = {
+  origin:
+    ['http://localhost:3000/',
+      'https://my.cyberpark.uz/',
+      'https://89.249.63.233/',
+      'https://213.230.91.132/'],
+  credentials: true,
+  optionSuccessStatus: 200
+}
+
 app.use(morgan('dev'))
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(bodyParser.json({ limit: '100mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
