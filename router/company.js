@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const config =require('../config/auth.config')
+const config = require('../config/auth.config')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const mongoose =require('mongoose');
-const {verifyToken,isCompany}=require('../middleware/auth')
+const mongoose = require('mongoose');
+const { verifyToken, isCompany } = require('../middleware/auth')
 const rateLimit = require('../helpers/request_limitter');
 const { userLogger, paymentLogger } = require('../helpers/logger');
 const Company = require("../db/models/company");
 const User = require("../db/models/user");
 const sendMail = require("../helpers/sendemail")
-const RefreshToken=require("../db/models/refreshToken.model")
-const getCurrentIndianDateTime=require("../helpers/time")
+const RefreshToken = require("../db/models/refreshToken.model")
+const getCurrentIndianDateTime = require("../helpers/time")
 
 
 /**
@@ -114,7 +114,7 @@ router.post("/signup", async (req, res) => {
   // Our register logic starts here
   try {
     // Get user input
-    const { cn, o, pinfl, t, tin, uid,alias,name,serialNumber,validFrom,validTo } = req.body;
+    const { cn, o, pinfl, t, tin, uid, alias, name, serialNumber, validFrom, validTo } = req.body;
     // Validate user input
     if (!(tin && pinfl && cn)) {
       return res.status(400).json({ code: 400, message: 'All input is required' });
@@ -135,13 +135,13 @@ router.post("/signup", async (req, res) => {
       position: t,
       tin: tin,
       uid: uid,
-      alias:alias,
+      alias: alias,
       name: name,
-      serialNumber:serialNumber,
+      serialNumber: serialNumber,
       validFrom: validFrom,
-      validTo:validTo,
-      created_at:getCurrentIndianDateTime(),
-      updated_at:getCurrentIndianDateTime()
+      validTo: validTo,
+      created_at: getCurrentIndianDateTime(),
+      updated_at: getCurrentIndianDateTime()
     };
     const company = new Company(value);
     // validation
@@ -156,8 +156,9 @@ router.post("/signup", async (req, res) => {
     // }
     // return new user
     return res.status(201).json({
-      status:201,
-      data:saved_company});
+      status: 201,
+      data: saved_company
+    });
   } catch (err) {
     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
   }
@@ -233,7 +234,7 @@ router.post("/checkCompany", async (req, res) => {
     // Get user input
     const { pcks7, pinfl, tin } = req.body;
     // Validate user input
-    if (!(pcks7 && tin && pinfl )) {
+    if (!(pcks7 && tin && pinfl)) {
       return res.status(400).json({ code: 400, message: 'All input is required' });
     }
 
@@ -246,8 +247,9 @@ router.post("/checkCompany", async (req, res) => {
       // return res.status(409).send("User Already Exist. Please Login");
     }
     return res.status(200).json({
-      status:200,
-      message: 'Company is exist'});
+      status: 200,
+      message: 'Company is exist'
+    });
   } catch (err) {
     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
   }
@@ -320,11 +322,11 @@ router.post("/signin", async (req, res) => {
 
     // Validate user input
     if (!(true)) {
-      return res.status(400).json({result:"Key is not valid"})
+      return res.status(400).json({ result: "Key is not valid" })
     }
     // Validate user input
     if (!(pinfl && cn)) {
-      return res.status(400).json({result:"pinfl or cn missed"})
+      return res.status(400).json({ result: "pinfl or cn missed" })
     }
     // Validate if user exist in our database
     const company = await Company.findOne({ pinfl });
@@ -337,7 +339,7 @@ router.post("/signin", async (req, res) => {
       expiresIn: config.jwtExpiration,
     });
     let refreshToken = await RefreshToken.createToken(company);
-    return res.status(200).json({result:"success",data:company,token:token,refreshToken:refreshToken});
+    return res.status(200).json({ result: "success", data: company, token: token, refreshToken: refreshToken });
   } catch (err) {
     userLogger.error(err);
     console.log(err);
@@ -417,7 +419,7 @@ router.get("/refreshToken", async (req, res) => {
 
     if (RefreshToken.verifyExpiration(refreshToken)) {
       RefreshToken.findByIdAndRemove(refreshToken._id, { useFindAndModify: false }).exec();
-      
+
       res.status(403).json({
         message: "Refresh token was expired. Please make a new signin request",
       });
@@ -503,9 +505,9 @@ router.post("/list", async (req, res) => {
   try {
 
     const company = await Company.find()
-    .skip((pageNumber - 1) * pageSize) 
-    .limit(pageSize)           
-    .sort({ first_name: 1 });
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ first_name: 1 });
     // console.log(user)
     return res.status(202).json({ code: 202, list_of_companies: company });
 
@@ -529,10 +531,10 @@ router.post("/update/:id", async (req, res) => {
   // const value = authorSchema.validate(req.body);
   const updateCompany = await Company.findById(id);
 
-    if (!updateCompany) {
-      return res.status(400).json({ code: 404, message: 'User not found' });
-      // return res.status(409).send("User Already Exist. Please Login");
-    }
+  if (!updateCompany) {
+    return res.status(400).json({ code: 404, message: 'User not found' });
+    // return res.status(409).send("User Already Exist. Please Login");
+  }
   const newValues = {
     company_name: company_name,
     email: email,
@@ -574,7 +576,7 @@ router.post('/resetpassworduser', async (req, res) => {
   const text = 'Hello ' + user.first_name + ',\n\n' + 'Please verify your account again by clicking the link: \nhttp:\/\/' + req.headers.host + '\/user/resetpassword/confirmation\/' + user.email + '\/' + token.token + '\n\nThank You!\n';
   // console.log(text);
   const emaile = sendMail(email, text);
-  return res.status(200).json({ code: 200, message: 'We sent e resent link your ', user: user,text:text });
+  return res.status(200).json({ code: 200, message: 'We sent e resent link your ', user: user, text: text });
 });
 
 /**
@@ -702,7 +704,7 @@ router.delete("/delete", async (req, res) => {
  *                   description: An error message
  */
 router.get("/getone", async (req, res) => {
-  
+
   try {
     const id = req.query.id;
     // id valid chech
@@ -775,8 +777,8 @@ router.get("/getone", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.get("/me",verifyToken, async (req, res) => {
-  
+router.get("/me", verifyToken, async (req, res) => {
+
   try {
     const id = req.body.company;
     // id valid chech
@@ -788,19 +790,49 @@ router.get("/me",verifyToken, async (req, res) => {
     }
     // this only needed for development, in deployment is not real function
     var user = await Company.find({ _id: id });
-    console.log(user.length>0)
+    console.log(user.length > 0)
     console.log(id)
-    if (user.length>0) {
+    if (user.length > 0) {
       return res.status(200).json({ code: 200, message: 'user exist', user: user })
     }
     user = await User.find({ _id: id });
-    if (user.length>0) {
+    if (user.length > 0) {
       return res.status(200).json({ code: 200, message: 'user exist', user: user })
-    }else {
-      return res.status(200).json({ code: 200, message: 'Internal server error'})
+    } else {
+      return res.status(200).json({ code: 200, message: 'Internal server error' })
     };
   } catch (err) {
     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
   }
+});
+
+//( /user/update/:id) in order to update specific user
+router.post("/changepassword/:id", verifyToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(req.userId)
+    //id check
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(422).json({
+        message: 'Id is not valid',
+        error: id,
+      });
+    }
+    const { password, newPassword } = req.body;
+    // const value = authorSchema.validate(req.body);
+    const user = await Company.findById(id);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      //generate new password
+      encryptedPassword = await bcrypt.hash(newPassword, 10);
+      // user
+      const user = await User.findOneAndUpdate({ _id: id }, { password: encryptedPassword });
+
+      return res.status(200).json({ status: 200, message: "success" });
+    }
+    return res.status(400).json({ code: 400, message: 'user password is not matched' });
+  } catch (error) {
+    return res.status(500).json({ code: 500, message: error });
+  }
+
 });
 module.exports = router;

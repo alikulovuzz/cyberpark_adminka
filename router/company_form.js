@@ -500,7 +500,7 @@ router.get("/refreshToken", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list",verifyToken,isAdmin, async (req, res) => {
+router.post("/list", verifyToken, isAdmin, async (req, res) => {
   try {
     let { pageNumber, pageSize } = req.body;
     pageNumber = parseInt(pageNumber);
@@ -517,7 +517,7 @@ router.post("/list",verifyToken,isAdmin, async (req, res) => {
   }
 });
 //( /user/update/:id) in order to update specific user
-router.post("/update/:id",verifyToken, async (req, res) => {
+router.post("/update/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   //id check
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -558,7 +558,7 @@ router.post("/update/:id",verifyToken, async (req, res) => {
   };
 });
 //( /user/resetpassworduser) in order to get list of users
-router.post('/resetpassworduser',verifyToken, async (req, res) => {
+router.post('/resetpassworduser', verifyToken, async (req, res) => {
   const { email } = req.body;
   const user = await Company_form.findOne({ email: email });
   if (!user) {
@@ -627,7 +627,7 @@ router.post('/resetpassworduser',verifyToken, async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.delete("/delete",verifyToken, async (req, res) => {
+router.delete("/delete", verifyToken, async (req, res) => {
 
   const id = req.query.id;
 
@@ -700,7 +700,7 @@ router.delete("/delete",verifyToken, async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.get("/getone",verifyToken, async (req, res) => {
+router.get("/getone", verifyToken, async (req, res) => {
 
   try {
     const id = req.query.id;
@@ -799,6 +799,27 @@ router.get("/me", verifyToken, async (req, res) => {
     };
   } catch (err) {
     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
+  }
+});
+//( /user/update/:id) in order to update specific user
+router.post("/changepassword", verifyToken, async (req, res) => {
+  try {
+    const id = req.userId;
+    //id check
+    const { password, newPassword } = req.body;
+    // const value = authorSchema.validate(req.body);
+    const user = await Company_form.findById(id);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      //generate new password
+      encryptedPassword = await bcrypt.hash(newPassword, 10);
+      // user
+      await Company_form.findOneAndUpdate({ _id: id }, { password: encryptedPassword, updated_at: getCurrentIndianDateTime() });
+
+      return res.status(200).json({ status: 200, message: "success" });
+    }
+    return res.status(400).json({ code: 400, message: 'user password is not matched' });
+  } catch (error) {
+    return res.status(500).json({ code: 500, message: "Internal server error", message: error });
   }
 });
 module.exports = router;
