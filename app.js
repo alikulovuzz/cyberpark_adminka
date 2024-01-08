@@ -17,7 +17,7 @@ const PORT = process.env.PORT || '8081'
 
 const corsOptions = {
   origin:
-    ['http://localhost',
+    ['http://localhost:3000',
       'https://my.cyberpark.uz/',
       'https://89.249.63.233/',
       'https://213.230.91.132/'],
