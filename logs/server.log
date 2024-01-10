@@ -1,11 +1,2 @@
-{"level":"error"}
-{"level":"error"}
-{"level":"error"}
-{"level":"error"}
-{"level":"error"}
-{"level":"error"}
-{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"{ company_id: '64ccd16e5e94df82303a3716' }\" (type Object) at path \"_id\" for model \"Company\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"{ company_id: '64ccd16e5e94df82303a3716' }\"","value":{"company_id":"64ccd16e5e94df82303a3716"},"valueType":"Object"}
-{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"{ company_id: '64ccd16e5e94df82303a3716' }\" (type Object) at path \"_id\" for model \"Company\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"{ company_id: '64ccd16e5e94df82303a3716' }\"","value":{"company_id":"64ccd16e5e94df82303a3716"},"valueType":"Object"}
-{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"{ company_id: '64ccd16e5e94df82303a3716' }\" (type Object) at path \"_id\" for model \"Company\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"{ company_id: '64ccd16e5e94df82303a3716' }\"","value":{"company_id":"64ccd16e5e94df82303a3716"},"valueType":"Object"}
-{"level":"error"}
+{"level":"error"}{"level":"error"}
 {"level":"error"}

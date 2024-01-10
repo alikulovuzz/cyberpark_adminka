@@ -4,16 +4,15 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
-ENV NODE_ENV production
 
 
 COPY . ./
 
 FROM node:16.3.0-alpine
-COPY --from=builder /app /app
+COPY --from=builder /app/ /app/
 WORKDIR /app 
 ENV HOST=0.0.0.0
 
 EXPOSE 8081
-ENV NODE_ENV production
+
 CMD ["npm","run","start"]

@@ -22,7 +22,6 @@ const companySchema = new mongoose.Schema(
     },
     uid: {
       type: String,
-      required: [true, "Please, write your uid at least"],
       trim: true,
       min: 4,
     },
@@ -34,19 +33,16 @@ const companySchema = new mongoose.Schema(
     },
     serialNumber: {
       type: String,
-      required: [true, "Please, write your serialNumber at least"],
       trim: true,
       min: 4,
     },
     validFrom: {
       type: String,
-      required: [true, "Please, write your validFrom at least"],
       trim: true,
       min: 4,
     },
     validTo: {
       type: String,
-      required: [true, "Please, write your validTo at least"],
       trim: true,
       min: 4,
     },
@@ -64,7 +60,6 @@ const companySchema = new mongoose.Schema(
     },
     position: {
       type: String,
-      required: [true, "Please, write your position at least"],
       trim: true,
       min: 4,
     },
@@ -73,6 +68,12 @@ const companySchema = new mongoose.Schema(
       required: [true],
       trim: true,
       min: 4,
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      min: 4
     },
     tin: {
       type: String,
@@ -109,6 +110,14 @@ const companySchema = new mongoose.Schema(
       // },
       // min: 7,
     },
+    role: {
+        type: String,
+        default: "company",
+        enum: {
+          values: ['company', 'resident'],
+          message: '{VALUE} is not supported'
+        }
+      },
     status: {
       type: String,
       default: "noResident",
@@ -135,4 +144,4 @@ const companySchema = new mongoose.Schema(
 
 companySchema.index({ pinfl: 1 }); // schema level
 
-module.exports = mongoose.model("Company", companySchema);
+module.exports = mongoose.model("Company_form", companySchema);

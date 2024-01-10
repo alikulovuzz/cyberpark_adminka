@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const { verifyToken, isCompany } = require('../middleware/auth')
+const { verifyToken, isCompany, isAdmin } = require('../middleware/auth')
 const rateLimit = require('../helpers/request_limitter');
 const { userLogger, paymentLogger } = require('../helpers/logger');
-const Company = require("../db/models/company");
+const Company_form = require("../db/models/company_form");
 const User = require("../db/models/user");
 const sendMail = require("../helpers/sendemail")
 const RefreshToken = require("../db/models/refreshToken.model")
@@ -17,11 +17,11 @@ const getCurrentIndianDateTime = require("../helpers/time")
 
 /**
  * @swagger
- * /api/v1/company/signup:
+ * /api/v1/company_form/signup:
  *   post:
  *     description: Sing up new Company to Server!
  *     tags:
- *       - Company
+ *       - V2 Company
  *     parameters:
  *       - name: data
  *         description: JSON object containing pageNumber and pageSize
@@ -41,6 +41,10 @@ const getCurrentIndianDateTime = require("../helpers/time")
  *             pinfl:
  *               description: PINFL of company
  *               example: 32808810170066
+ *               type: string
+ *             password:
+ *               description: Passwrod of user
+ *               example: 94Wqdw56qa#jsd
  *               type: string
  *             t:
  *               description: Position
@@ -114,24 +118,26 @@ router.post("/signup", async (req, res) => {
   // Our register logic starts here
   try {
     // Get user input
-    const { cn, o, pinfl, t, tin, uid, alias, name, serialNumber, validFrom, validTo } = req.body;
+    const { cn, o, pinfl, t, tin, uid, alias, password, name, serialNumber, validFrom, validTo } = req.body;
     // Validate user input
     if (!(tin && pinfl && cn)) {
       return res.status(400).json({ code: 400, message: 'All input is required' });
     }
     // check if user already exist
     // Validate if user exist in our database
-    const oldCompany = await Company.findOne({ pinfl });
+    const oldCompany = await Company_form.findOne({ pinfl });
 
     if (oldCompany) {
       return res.status(409).json({ code: 400, message: 'Company Already Exist. Please Login' });
       // return res.status(409).send("User Already Exist. Please Login");
     }
+    encryptedPassword = await bcrypt.hash(password, 10);
     //user validated
     const value = {
       cn: cn,
       organization_name: o,
       pinfl: pinfl,
+      password: encryptedPassword,
       position: t,
       tin: tin,
       uid: uid,
@@ -143,7 +149,7 @@ router.post("/signup", async (req, res) => {
       created_at: getCurrentIndianDateTime(),
       updated_at: getCurrentIndianDateTime()
     };
-    const company = new Company(value);
+    const company = new Company_form(value);
     // validation
     var error = company.validateSync();
     if (error) {
@@ -164,14 +170,13 @@ router.post("/signup", async (req, res) => {
   }
   // Our register logic ends here
 });
-
 /**
  * @swagger
- * /api/v1/company/checkCompany:
+ * /api/v1/company_form/checkCompany:
  *   post:
  *     description: Sing up new Company to Server!
  *     tags:
- *       - Company
+ *       - V2 Company
  *     parameters:
  *       - name: data
  *         description: JSON object containing pageNumber and pageSize
@@ -234,13 +239,13 @@ router.post("/checkCompany", async (req, res) => {
     // Get user input
     const { pcks7, pinfl, tin } = req.body;
     // Validate user input
-    if (!(pcks7 && tin && pinfl)) {
+    if (!(tin && pinfl)) {
       return res.status(400).json({ code: 400, message: 'All input is required' });
     }
 
     // check if user already exist
     // Validate if user exist in our database
-    const oldCompany = await Company.findOne({ pinfl });
+    const oldCompany = await Company_form.findOne({ pinfl });
 
     if (!oldCompany) {
       return res.status(409).json({ code: 400, message: 'Company is not exist' });
@@ -257,11 +262,11 @@ router.post("/checkCompany", async (req, res) => {
 });
 /**
  * @swagger
- * /api/v1/company/signin:
+ * /api/v1/company_form/signin:
  *   post:
  *     description: Sing in Company to Server!
  *     tags:
- *       - Company
+ *       - V2 Company
  *     parameters:
  *       - name: data
  *         description: JSON object containing pageNumber and pageSize
@@ -270,13 +275,13 @@ router.post("/checkCompany", async (req, res) => {
  *         schema:
  *           type: object
  *           properties:
- *             cn:
- *               description: Director's name of company
- *               example: XAMZIN ALBERT ALMAZOVICH
+ *             password:
+ *               description: Passwrod of user
+ *               example: BEg6PmpgiigO4YnMTSlb
  *               type: string
  *             pinfl:
  *               description: PINFL of company
- *               example: 32808810170066
+ *               example: 207335649
  *               type: string
  *     responses:
  *       201:
@@ -318,28 +323,28 @@ router.post("/signin", async (req, res) => {
   // Our login logic starts here
   try {
     // Get user input
-    const { cn, pinfl } = req.body;
+    const { password, pinfl } = req.body;
 
     // Validate user input
     if (!(true)) {
       return res.status(400).json({ result: "Key is not valid" })
     }
     // Validate user input
-    if (!(pinfl && cn)) {
+    if (!(pinfl && password)) {
       return res.status(400).json({ result: "pinfl or cn missed" })
     }
     // Validate if user exist in our database
-    const company = await Company.findOne({ pinfl });
-    console.log(company)
-    if (!company) {
-      return res.status(409).json({ code: 400, message: 'Company is not exist' });
-      // return res.status(409).send("User Already Exist. Please Login");
+    const company = await Company_form.findOne({ pinfl });
+    console.log(await bcrypt.compare(password, company.password))
+    if (company && (await bcrypt.compare(password, company.password))) {
+      // Create token
+      const token = jwt.sign({ id: company._id }, config.secret, {
+        expiresIn: config.jwtExpiration,
+      });
+      let refreshToken = await RefreshToken.createToken(company);
+      return res.status(200).json({ result: "success", data: company, token: token, refreshToken: refreshToken });
     }
-    const token = jwt.sign({ id: company._id }, config.secret, {
-      expiresIn: config.jwtExpiration,
-    });
-    let refreshToken = await RefreshToken.createToken(company);
-    return res.status(200).json({ result: "success", data: company, token: token, refreshToken: refreshToken });
+    return res.status(404).json({ code: 404, message: 'user does not exist and not verified' });
   } catch (err) {
     userLogger.error(err);
     console.log(err);
@@ -347,14 +352,13 @@ router.post("/signin", async (req, res) => {
   }
   // Our register logic ends here
 });
-
 /**
  * @swagger
- * /api/v1/company/refreshToken:
+ * /api/v1/company_form/refreshToken:
  *   get:
  *     description: refreshToken of Company!
  *     tags:
- *       - Company
+ *       - V2 Company
  *     parameters:
  *       - name: refreshToken
  *         description: refreshToken
@@ -438,14 +442,13 @@ router.get("/refreshToken", async (req, res) => {
     return res.status(500).send({ message: err });
   }
 });
-
 /**
  * @swagger
- * /api/v1/company/list:
+ * /api/v1/company_form/list:
  *   post:
  *     description: Get all company's data!
  *     tags:
- *       - Company
+ *       - V2 Company
  *     parameters:
  *       - name: data
  *         description: JSON object containing pageNumber and pageSize
@@ -497,20 +500,16 @@ router.get("/refreshToken", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.post("/list", async (req, res) => {
-  let { pageNumber, pageSize } = req.body;
-  pageNumber = parseInt(pageNumber);
-  pageSize = parseInt(pageSize);
-  // this only needed for development, in deployment is not real function
+router.post("/list", verifyToken, isAdmin, async (req, res) => {
   try {
-
-    const company = await Company.find()
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .sort({ first_name: 1 });
+    let { pageNumber, pageSize } = req.body;
+    pageNumber = parseInt(pageNumber);
+    pageSize = parseInt(pageSize);
+    // this only needed for development, in deployment is not real function
+    const count = await Company_form.countDocuments()
+    const company = await Company_form.find().sort({ created_at: 1 }).skip((pageNumber - 1) * pageSize).limit(pageSize);
     // console.log(user)
-    return res.status(202).json({ code: 202, list_of_companies: company });
-
+    return res.status(202).json({ code: 202, count: count, page: parseInt(count / pageSize) + 1, list_of_companies: company });
   } catch (err) {
     userLogger.error(err);
     console.log(err);
@@ -518,7 +517,7 @@ router.post("/list", async (req, res) => {
   }
 });
 //( /user/update/:id) in order to update specific user
-router.post("/update/:id", async (req, res) => {
+router.post("/update/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   //id check
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -529,7 +528,7 @@ router.post("/update/:id", async (req, res) => {
   }
   const { company_name, email, stir, img_link, phone } = req.body;
   // const value = authorSchema.validate(req.body);
-  const updateCompany = await Company.findById(id);
+  const updateCompany = await Company_form.findById(id);
 
   if (!updateCompany) {
     return res.status(400).json({ code: 404, message: 'User not found' });
@@ -543,13 +542,13 @@ router.post("/update/:id", async (req, res) => {
     phone: phone
   };
 
-  const validateCompany = new Company(newValues);
+  const validateCompany = new Company_form(newValues);
   // validation
   const error = validateCompany.validateSync();
   if (error) {
     return res.status(409).json({ code: 409, message: 'Validatioan error', error: error });
   }
-  const user = await Company.findOneAndUpdate({ _id: id }, newValues);
+  const user = await Company_form.findOneAndUpdate({ _id: id }, newValues);
 
   if (user.err) {
     return res.status(500).json({ code: 500, message: 'There as not any users yet', error: err })
@@ -559,9 +558,9 @@ router.post("/update/:id", async (req, res) => {
   };
 });
 //( /user/resetpassworduser) in order to get list of users
-router.post('/resetpassworduser', async (req, res) => {
+router.post('/resetpassworduser', verifyToken, async (req, res) => {
   const { email } = req.body;
-  const user = await Company.findOne({ email: email });
+  const user = await Company_form.findOne({ email: email });
   if (!user) {
     return res.status(400).json({ code: 400, message: 'Wrong email or no users' });
     // return res.status(409).send("User Already Exist. Please Login");
@@ -578,14 +577,13 @@ router.post('/resetpassworduser', async (req, res) => {
   const emaile = sendMail(email, text);
   return res.status(200).json({ code: 200, message: 'We sent e resent link your ', user: user, text: text });
 });
-
 /**
  * @swagger
- * /api/v1/company/delete:
+ * /api/v1/company_form/delete:
  *   delete:
  *     description: Deletes a company based on the provided ID!
  *     tags:
- *       - Company
+ *       - V2 Company
  *     parameters:
  *       - name: id
  *         description: JSON object containing pageNumber and pageSize
@@ -629,7 +627,7 @@ router.post('/resetpassworduser', async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.delete("/delete", async (req, res) => {
+router.delete("/delete", verifyToken, async (req, res) => {
 
   const id = req.query.id;
 
@@ -641,7 +639,7 @@ router.delete("/delete", async (req, res) => {
   }
 
   // this only needed for development, in deployment is not real function
-  const user = await Company.findOneAndDelete({ _id: id });
+  const user = await Company_form.findOneAndDelete({ _id: id });
   // console.log(user) 
   if (!user) {
     return res.status(500).json({ code: 500, message: 'There as not any users yet', error: user })
@@ -653,14 +651,13 @@ router.delete("/delete", async (req, res) => {
     return res.status(200).json({ code: 200, message: 'user exist and deleted', deleted_user: user })
   };
 });
-
 /**
  * @swagger
- * /api/v1/company/getone:
+ * /api/v1/company_form/getone:
  *   get:
  *     description: get organization by id!
  *     tags:
- *       - Company
+ *       - V2 Company
  *     parameters:
  *       - name: id
  *         description: _id
@@ -703,7 +700,7 @@ router.delete("/delete", async (req, res) => {
  *                   type: string
  *                   description: An error message
  */
-router.get("/getone", async (req, res) => {
+router.get("/getone", verifyToken, async (req, res) => {
 
   try {
     const id = req.query.id;
@@ -715,7 +712,7 @@ router.get("/getone", async (req, res) => {
       });
     }
     // this only needed for development, in deployment is not real function
-    const user = await Company.find({ _id: id });
+    const user = await Company_form.find({ _id: id });
 
     if (user.err) {
       return res.status(500).json({ code: 500, message: 'There as not any users yet', error: err })
@@ -729,11 +726,11 @@ router.get("/getone", async (req, res) => {
 });
 /**
  * @swagger
- * /api/v1/company/me:
+ * /api/v1/company_form/me:
  *   get:
- *     description: get organization by id!
+ *     description: get organization by token!
  *     tags:
- *       - Company
+ *       - V2 Get User By ID
  *     parameters:
  *       - name: x-access-token
  *         description: token
@@ -778,9 +775,8 @@ router.get("/getone", async (req, res) => {
  *                   description: An error message
  */
 router.get("/me", verifyToken, async (req, res) => {
-
   try {
-    const id = req.body.company;
+    const id = req.userId;
     // id valid chech
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(422).json({
@@ -789,7 +785,7 @@ router.get("/me", verifyToken, async (req, res) => {
       });
     }
     // this only needed for development, in deployment is not real function
-    var user = await Company.find({ _id: id });
+    var user = await Company_form.find({ _id: id });
     console.log(user.length > 0)
     console.log(id)
     if (user.length > 0) {
@@ -805,34 +801,25 @@ router.get("/me", verifyToken, async (req, res) => {
     return res.status(500).json({ code: 500, message: 'Internal server error', error: err });
   }
 });
-
 //( /user/update/:id) in order to update specific user
-router.post("/changepassword/:id", verifyToken, async (req, res) => {
+router.post("/changepassword", verifyToken, async (req, res) => {
   try {
-    const id = req.params.id;
-    console.log(req.userId)
+    const id = req.userId;
     //id check
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(422).json({
-        message: 'Id is not valid',
-        error: id,
-      });
-    }
     const { password, newPassword } = req.body;
     // const value = authorSchema.validate(req.body);
-    const user = await Company.findById(id);
+    const user = await Company_form.findById(id);
     if (user && (await bcrypt.compare(password, user.password))) {
       //generate new password
       encryptedPassword = await bcrypt.hash(newPassword, 10);
       // user
-      const user = await User.findOneAndUpdate({ _id: id }, { password: encryptedPassword });
+      await Company_form.findOneAndUpdate({ _id: id }, { password: encryptedPassword, updated_at: getCurrentIndianDateTime() });
 
       return res.status(200).json({ status: 200, message: "success" });
     }
     return res.status(400).json({ code: 400, message: 'user password is not matched' });
   } catch (error) {
-    return res.status(500).json({ code: 500, message: error });
+    return res.status(500).json({ code: 500, message: "Internal server error", message: error });
   }
-
 });
 module.exports = router;

@@ -1,2 +1,3 @@
 node_modules/
-db/database.js
+/db/database.js
+upoloads/

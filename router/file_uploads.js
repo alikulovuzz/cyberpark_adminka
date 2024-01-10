@@ -4,6 +4,8 @@ const multer = require('multer');
 const uploads=require('../db/models/uploads')
 const dotenv = require('dotenv')
 const uuid = require('uuid');
+var os = require("os");
+
 
 dotenv.config()
 const HOST = process.env.HOST || '0.0.0.0'
@@ -14,7 +16,7 @@ var storage = multer.diskStorage({
         cb(null, 'uploads')
     },
     filename: function (req, file, cb) {
-        cb(null, new Date().toISOString().replace(/:/g, '-')+uuid.v1()+ file.originalname)
+        cb(null, uuid.v1()+ '.'+file.originalname.match(/\.(.+)$/)?.[1] || 'No extension')
     }
 })
 
@@ -35,7 +37,7 @@ var upload = multer({ storage: storage })
 
 /**
  * @swagger
- * /api/v1/uploads:
+ * /api/v1/upload:
  *   post:
  *     description: Upload a file and save its link in the database
  *     tags:
@@ -96,7 +98,7 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       });
   
       const savedFile = await fileSave.save();
-      res.status(201).json({ code: 201, data: savedFile, link:`http://${HOST}:3000/uploads/${savedFile.file_link}` });
+      res.status(201).json({ code: 201, data: savedFile, link:`https://my.cyberpark.uz/api/v1/uploads/${savedFile.file_link}` });
     } catch (err) {
       if (!err.httpStatusCode) {
         err.httpStatusCode = 500;

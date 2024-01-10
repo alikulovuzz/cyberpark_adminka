@@ -67,7 +67,7 @@ const userSchema = new mongoose.Schema({
     {
       type: String,
       enum: {
-        values: ['admin', 'superAdmin'],
+        values: ['admin', 'superAdmin','crm'],
         message: '{VALUE} is not supported'
       }
     }

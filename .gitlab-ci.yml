@@ -43,12 +43,12 @@ deploy:
     # Set right chmod on SSH key file
     - chmod 400 $MASTER_SSH_KEY
     # Login to Gitlab Container registry
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}"
+    - ssh -vvv -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}"
     # Remove old containers and images if exists
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker rm -f ${CI_PROJECT_NAME} || true"
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker rmi \$(docker images -q ${DOCKER_REPO}) || true"
+    - ssh -vvv -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker rm -f ${CI_PROJECT_NAME} || true"
+    - ssh -vvv -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}" "docker rmi \$(docker images -q ${DOCKER_REPO}) || true"
     # Download and run new image
-    - ssh -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}"
+    - ssh -vvv -o StrictHostKeyChecking=no -i $MASTER_SSH_KEY "${MASTER_SSH_USER}@${MASTER_HOST}"
       docker run
       --name=$CI_PROJECT_NAME
       --restart=always
